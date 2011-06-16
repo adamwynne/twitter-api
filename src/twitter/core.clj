@@ -2,6 +2,7 @@
   (:use
    [clojure.test])
   (:require
+   [twitter.handlers :as hl]
    [clojure.contrib.json :as json]
    [oauth.client :as oa]
    [oauth.signature :as oas]
@@ -28,22 +29,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn sign-query-params 
-  "takes oauth credentials and signs the query parameters, merging the new oauth params into the returned map"
+  "takes oauth credentials and signs the query parameters"
   [oauth-creds action uri & {:keys [query]}]
-  (merge query
-         (oa/credentials (:consumer oauth-creds)
-                         (:access-token oauth-creds)
-                         (:access-token-secret oauth-creds)
-                         action
-                         uri
-                         query)))
+  
+  (oa/credentials (:consumer oauth-creds)
+                  (:access-token oauth-creds)
+                  (:access-token-secret oauth-creds)
+                  action
+                  uri
+                  query))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn make-test-creds
   "creates a set of test credentials for the api tests"
-
   []
+
   (let [app-key "4NZ24o0FnUMT4ngO6Lg1ow"
         app-secret "8W5UTZIspWQ3HDhUSW8gnCNn5JHJJDrUbCtI3O0UY"
         consumer (oa/make-consumer app-key
@@ -73,6 +74,11 @@
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(deftest test-fix-keyword
+  (is (= (fix-keyword "my-test") "my_test")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn transform-map
   "transforms the k/v pairs of a map using a supplied transformation function"
   [m & {:keys [key-trans val-trans] :or {key-trans (fn [x] x) val-trans (fn [x] x)}}]
@@ -81,9 +87,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn partition-map
+  "partitions a map, depending on a predicate, returning a vector of maps of passes and fails"
+  [map-to-partition pred]
+  
+  (loop [passes {}
+         fails {}
+         m map-to-partition]
+    (if (empty? m) [passes fails]
+        (let [[k v] (first m)]
+          (if (pred [k v])
+            (recur (assoc passes k v) fails (rest m))
+            (recur passes (assoc fails k v) (rest m)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn action-2-function 
   "maps the keyword of the action to the respective http verb function"
   [kw]
+
   (cond (= kw :get) ac/GET
         (= kw :post) ac/POST
         (= kw :delete) ac/DELETE))
@@ -91,66 +113,42 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn url-encode-val 
-  "takes a value and returns the url encoding of the string of it"
-  [val]
-  (oas/url-encode (str val)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn query-transform
-  "returns a function that contains the transformation of the query params required, depending on the action"
-  [action sign-fn url-encode-fn fix-keys-fn]
-
-  (cond (= action :get) #(sign-fn (url-encode-fn (fix-keys-fn %)))
-        (= action :post) #(sign-fn (fix-keys-fn %))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn return-everything 
-  "this takes a response and returns a map of the headers and the json-parsed body"
-  [resp]
+   "takes a value and returns the url encoding of the string of it"
+   [val]
   
-  (hash-map :headers (ac/headers resp) :body (json/read-json (ac/string resp))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn return-body
-  "this takes a response and returns the json-parsed body"
-  [resp]
-  
-  (json/read-json (ac/string resp)))
+   (oas/url-encode (str val)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn sync-http-request 
-  "calls the action on the resource specified in the uri"
+  "calls the action on the resource specified in the uri, signing with oauth in the headers"
   [action uri &
-   {:keys [query headers body oauth-creds return-fn]
+   {:keys [query headers body oauth-creds handler-fn]
     :or {oauth-creds *oauth-creds*,
-         return-fn return-everything}}]
-  
-  (let [fix-keys #(transform-map % :key-trans fix-keyword)
-        url-encode-vals #(transform-map % :val-trans url-encode-val)
-        sign #(sign-query-params oauth-creds action uri :query %)
+         handler-fn (hl/make-default-handler)}}]
 
-        final-query ((query-transform action sign url-encode-vals fix-keys) query)
-
-        response-from #((action-2-function action) % :query final-query :headers headers :body body)]
-
-    (return-fn (ac/await (response-from uri)))))
+  (let [final-query (transform-map query
+                                   :key-trans fix-keyword
+                                   :val-trans url-encode-val)
+        signing-params (sign-query-params oauth-creds action uri :query final-query)
+        final-headers (merge headers {:Authorization signing-params})]
+    (println "query: " final-query)
+    (println "headers: " final-headers)
+    (handler-fn
+     (ac/await
+      ((action-2-function action) uri :query final-query :headers final-headers :body body)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn process-args 
-  "takes a map of arguments, and reformats them to have stray k/v inserted in the query map"
+  "takes a map of arguments, and reformats them to have unknown k/v's inserted in the query map. also
+   removes the entries in the map that have a nil value"
   [arg-map]
 
-  (let [known-arg-keys '(:query :headers :body :oauth-creds :return-fn)
-        known-arg-map (select-keys arg-map known-arg-keys)
-        remaining-arg-map (dissoc arg-map known-arg-keys)]
-    
-    (remove nil?
-            (merge-with merge known-arg-map {:query remaining-arg-map}))))
+  (let [known-arg-keys #{:query :headers :body :oauth-creds :handler-fn}
+        [known-map unknown-map] (partition-map arg-map (fn [[k v]] (get known-arg-keys k)))]
+
+    (into {} (filter second (merge-with merge known-map {:query unknown-map})))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -166,5 +164,14 @@
               ~action
               ~uri
               (reduce concat (process-args arg-map#))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn make-uri 
+   "makes a uri from a supplied protocol, site, version and resource-path"
+   ([protocol site version resource-path]
+      (str protocol "://" site "/" version "/" resource-path))
+   ([protocol site resource-path]
+      (str protocol "://" site "/" resource-path)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
