@@ -1,81 +1,14 @@
 (ns twitter.core
   (:use
-   [clojure.test])
+   [clojure.test]
+   [twitter.handlers]
+   [twitter.oauth])
   (:require
-   [twitter.handlers :as hl]
    [clojure.contrib.json :as json]
    [oauth.client :as oa]
    [oauth.signature :as oas]
    [http.async.client :as ac]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defstruct oauth-creds
-  :consumer
-  :access-token
-  :access-token-secret)
-
-(def *oauth-creds* (struct oauth-creds))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmacro with-oauth-creds
-  "rebinds the oauth creds to the supplied ones"
-  [^oauth-creds oauth-creds & body]
-  
-  `(binding [*oauth-creds* ~oauth-creds]
-     ~@body))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn sign-query
-  "takes oauth credentials and returns a map of the signing parameters"
-  [oauth-creds action uri & {:keys [query]}]
-
-  (merge {:realm "Twitter API"}
-         (oa/credentials (:consumer oauth-creds)
-                         (:access-token oauth-creds)
-                         (:access-token-secret oauth-creds)
-                         action
-                         uri
-                         query)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn oauth-header-string 
-  "creates the string for the oauth header's 'Authorization' value, url encoding each value"
-  [signing-map]
-
-  (let [s (reduce (fn [s [k v]] (format "%s%s=%s," s (name k) (url-encode-val (str v))))
-                  "OAuth "
-                  signing-map)]
-    (.substring s 0 (dec (count s)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn make-test-creds
-  "creates a set of test credentials for the api tests"
-  []
-
-  (let [app-key "4NZ24o0FnUMT4ngO6Lg1ow"
-        app-secret "8W5UTZIspWQ3HDhUSW8gnCNn5JHJJDrUbCtI3O0UY"
-        consumer (oa/make-consumer app-key
-                                   app-secret
-                                   "https://twitter.com/oauth/request_token"
-                                   "https://twitter.com/oauth/access_token"
-                                   "https://twitter.com/oauth/authorize"
-                                   :hmac-sha1)
-        access-token "15321630-qagHj675nqKYYwFe2GOVq859V5TYkfOZai8GI4OB0"
-        access-token-secret "7saU2FHfHGBFPDpBWYsrxiHnVrowmZFUNizpi1RZd8M"]
-
-    (struct oauth-creds consumer access-token access-token-secret)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(deftest test-sign-query-params
-  (let [result (sign-query-params (make-test-creds) :get "http://www.cnn.com" :query {:test-param "true"})]
-    (is (:oauth_signature result))))
-  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn fix-keyword
@@ -96,6 +29,15 @@
   [m & {:keys [key-trans val-trans] :or {key-trans (fn [x] x) val-trans (fn [x] x)}}]
   
   (into {} (map (fn [[k v]] [(key-trans k) (val-trans v)]) m)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn make-uri 
+   "makes a uri from a supplied protocol, site, version and resource-path"
+   ([protocol site version resource-path]
+      (str protocol "://" site "/" version "/" resource-path))
+   ([protocol site resource-path]
+      (str protocol "://" site "/" resource-path)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -124,24 +66,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn url-encode-val 
-   "takes a value and returns the url encoding of the string of it"
-   [val]
-  
-   (oas/url-encode (str val)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn sync-http-request 
   "calls the action on the resource specified in the uri, signing with oauth in the headers"
   [action uri &
    {:keys [query headers body oauth-creds handler-fn]
     :or {oauth-creds *oauth-creds*,
-         handler-fn (hl/make-default-handler)}}]
+         handler-fn (make-default-handler)}}]
 
   (let [final-query (transform-map query
                                    :key-trans fix-keyword
-                                   :val-trans url-encode-val)
+                                   :val-trans (comp oas/url-encode str))
         signing-params (sign-query oauth-creds action uri :query final-query)
         final-headers (merge headers {:Authorization (oauth-header-string signing-params)})]
 
@@ -175,14 +109,5 @@
               ~action
               ~uri
               (reduce concat (process-args arg-map#))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn make-uri 
-   "makes a uri from a supplied protocol, site, version and resource-path"
-   ([protocol site version resource-path]
-      (str protocol "://" site "/" version "/" resource-path))
-   ([protocol site resource-path]
-      (str protocol "://" site "/" resource-path)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
