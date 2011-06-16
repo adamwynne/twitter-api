@@ -28,16 +28,28 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn sign-query-params 
-  "takes oauth credentials and signs the query parameters"
+(defn sign-query
+  "takes oauth credentials and returns a map of the signing parameters"
   [oauth-creds action uri & {:keys [query]}]
-  
-  (oa/credentials (:consumer oauth-creds)
-                  (:access-token oauth-creds)
-                  (:access-token-secret oauth-creds)
-                  action
-                  uri
-                  query))
+
+  (merge {:realm "Twitter API"}
+         (oa/credentials (:consumer oauth-creds)
+                         (:access-token oauth-creds)
+                         (:access-token-secret oauth-creds)
+                         action
+                         uri
+                         query)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn oauth-header-string 
+  "creates the string for the oauth header's 'Authorization' value, url encoding each value"
+  [signing-map]
+
+  (let [s (reduce (fn [s [k v]] (format "%s%s=%s," s (name k) (url-encode-val (str v))))
+                  "OAuth "
+                  signing-map)]
+    (.substring s 0 (dec (count s)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -130,10 +142,9 @@
   (let [final-query (transform-map query
                                    :key-trans fix-keyword
                                    :val-trans url-encode-val)
-        signing-params (sign-query-params oauth-creds action uri :query final-query)
-        final-headers (merge headers {:Authorization signing-params})]
-    (println "query: " final-query)
-    (println "headers: " final-headers)
+        signing-params (sign-query oauth-creds action uri :query final-query)
+        final-headers (merge headers {:Authorization (oauth-header-string signing-params)})]
+
     (handler-fn
      (ac/await
       ((action-2-function action) uri :query final-query :headers final-headers :body body)))))
