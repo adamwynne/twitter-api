@@ -2,11 +2,11 @@
   (:use
    [clojure.test]
    [twitter.handlers]
-   [twitter.oauth])
+   [twitter.oauth]
+   [twitter.utils])
   (:require
    [clojure.contrib.json :as json]
    [oauth.client :as oa]
-   [oauth.signature :as oas]
    [http.async.client :as ac]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -20,15 +20,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-fix-keyword
-  (is (= (fix-keyword "my-test") "my_test")))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn transform-map
-  "transforms the k/v pairs of a map using a supplied transformation function"
-  [m & {:keys [key-trans val-trans] :or {key-trans (fn [x] x) val-trans (fn [x] x)}}]
-  
-  (into {} (map (fn [[k v]] [(key-trans k) (val-trans v)]) m)))
+  (is (= (fix-keyword :my-test) :my_test)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -41,59 +33,48 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn partition-map
-  "partitions a map, depending on a predicate, returning a vector of maps of passes and fails"
-  [map-to-partition pred]
-  
-  (loop [passes {}
-         fails {}
-         m map-to-partition]
-    (if (empty? m) [passes fails]
-        (let [[k v] (first m)]
-          (if (pred [k v])
-            (recur (assoc passes k v) fails (rest m))
-            (recur passes (assoc fails k v) (rest m)))))))
+(deftest test-make-uri
+  (is (= (make-uri "http" "api.twitter.com" 1 "users/show.json") "http://api.twitter.com/1/users/show.json"))
+  (is (= (make-uri "http" "api.twitter.com" "users/show.json") "http://api.twitter.com/users/show.json")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn action-2-function 
-  "maps the keyword of the action to the respective http verb function"
-  [kw]
-
-  (cond (= kw :get) ac/GET
-        (= kw :post) ac/POST
-        (= kw :delete) ac/DELETE))
+(defn add-form-content-type
+  "adds a content type of url-encoded-form to the supplied headers"
+  [headers]
+  (merge headers
+         {:content-type "application/x-www-form-urlencoded"}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn sync-http-request 
-  "calls the action on the resource specified in the uri, signing with oauth in the headers"
-  [action uri &
-   {:keys [query headers body oauth-creds handler-fn]
-    :or {oauth-creds *oauth-creds*,
-         handler-fn (make-default-handler)}}]
+  "calls the action on the resource specified in the uri, signing with oauth in the headers
+   you can supply args from async.http.client (e.g. :query, :body etc) but also you can give
+   :params which will transform its keys from lisp-friendly dashes to http header-friendly _'s.
+   So :params could be {:screen-name 'blah'} and it be merged with :query as {:screen_name 'blah'}"
+  [action uri & args]
 
-  (let [final-query (transform-map query
-                                   :key-trans fix-keyword
-                                   :val-trans (comp oas/url-encode str))
-        signing-params (sign-query oauth-creds action uri :query final-query)
-        final-headers (merge headers {:Authorization (oauth-header-string signing-params)})]
+  (let [arg-map (apply hash-map args)
+        oauth-creds (or (:oauth-creds arg-map) *oauth-creds*)
+        handler-fn (or (:handler-fn arg-map) (make-default-handler))
 
-    (handler-fn
-     (ac/await
-      ((action-2-function action) uri :query final-query :headers final-headers :body body)))))
+        body (:body arg-map)
+        query (merge (:query arg-map)
+                     (transform-map (:params arg-map) :key-trans fix-keyword))
+        oauth-map (sign-query oauth-creds action uri :query query)
+        headers (merge (:headers arg-map)
+                       {:Authorization (oauth-header-string oauth-map)})
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        [http-verb my-args] (cond (= action :get)
+                                    [ac/GET (hash-map :query query :headers headers :body body)]
+                                  (nil? body)
+                                    [ac/POST (hash-map :headers (add-form-content-type headers) :body query)]
+                                  :else
+                                  [ac/POST (hash-map :query query :headers headers :body body)])
+        http-args (merge (dissoc arg-map :query :headers :body :oauth-creds :handler-fn :params)
+                         my-args)]
 
-(defn process-args 
-  "takes a map of arguments, and reformats them to have unknown k/v's inserted in the query map. also
-   removes the entries in the map that have a nil value"
-  [arg-map]
-
-  (let [known-arg-keys #{:query :headers :body :oauth-creds :handler-fn}
-        [known-map unknown-map] (partition-map arg-map (fn [[k v]] (get known-arg-keys k)))]
-
-    (into {} (filter second (merge-with merge known-map {:query unknown-map})))))
+    (handler-fn (ac/await (apply http-verb uri (apply concat http-args))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -104,10 +85,9 @@
   `(defn ~name
      [& args#]
      
-     (let [arg-map# (apply hash-map args#)]
-       (apply sync-http-request
-              ~action
-              ~uri
-              (reduce concat (process-args arg-map#))))))
+     (apply sync-http-request
+            ~action
+            ~uri
+            args#)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -43,12 +43,20 @@
 
 (defn oauth-header-string 
   "creates the string for the oauth header's 'Authorization' value, url encoding each value"
-  [signing-map]
+  [signing-map & {:keys [url-encode?] :or {url-encode? true}}]
 
-  (let [s (reduce (fn [s [k v]] (format "%s%s=%s," s (name k) (oas/url-encode (str v))))
+  (let [val-transform (if url-encode? oas/url-encode identity)
+        s (reduce (fn [s [k v]] (format "%s%s=%s," s (name k) (val-transform (str v))))
                   "OAuth "
                   signing-map)]
     (.substring s 0 (dec (count s)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest test-oauth-header-string
+  (is (= (oauth-header-string {:a 1 :b 2 :c 3}) "OAuth a=1,b=2,c=3"))
+  (is (= (oauth-header-string {:a "hi there"}) "OAuth a=hi%20there"))
+  (is (= (oauth-header-string {:a "hi there"} :url-encode? nil) "OAuth a=hi there")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
