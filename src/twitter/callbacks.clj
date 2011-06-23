@@ -13,7 +13,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn return-everything 
+(defn sync-return-everything 
   "this takes a response and returns a map of the headers and the json-parsed body"
   [response & {:keys [to-json?] :or {to-json? true}}]
 
@@ -24,7 +24,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn return-body
+(defn sync-return-body
   "this takes a response and returns the json-parsed body"
   [response]
   
@@ -46,7 +46,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn error-thrower 
+(defn sync-error-thrower 
   "throws the supplied error in an exception"
   [response]
 
@@ -61,20 +61,40 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn default-callbacks
+(defn sync-callbacks-default
   "throws on error and returns the whole response to the caller"
   []
 
-  (Callbacks. return-everything error-thrower))
+  (Callbacks. sync-return-everything sync-error-thrower))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn debug-callbacks
+(defn sync-callbacks-debug
   "throws on error and returns the whole response to the caller"
   []
 
-  (let [debugger #(return-everything % :to-json? false)]
+  (let [debugger #(sync-return-everything % :to-json? false)]
     (Callbacks. debugger debugger)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn call-on-stream
+  "takes a response and returns a function thats takes a chunk as input and then calls a supplied handler
+   functon on the chunk"
+  [chunk-handler-fn]
+  
+  (fn [response]
+    (println "helloooo")
+    (doseq [chunk (ac/string response)]
+      (chunk-handler-fn chunk))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn streaming-callbacks-default
+  "throws on error and prints out the streaming response to the caller"
+  []
+
+  (Callbacks. (call-on-stream println) #(ac/status %)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -83,7 +103,7 @@
   [#^Callbacks callbacks response]
 
   (if (< (:code (ac/status response)) 400)
-      (apply (:on-success callbacks) response)
-      (apply (:on-error callbacks) response)))
+      ((:on-success callbacks) response)
+      ((:on-error callbacks) response)))
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

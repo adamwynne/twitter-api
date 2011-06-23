@@ -1,6 +1,7 @@
 (ns twitter.api.streaming
   (:use
-   [twitter.core]))
+   [twitter.core]
+   [twitter.oauth]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -14,7 +15,7 @@
   [name action resource-path]
 
   (let [uri (make-uri *api-protocol* *api-site* *api-version* resource-path)]
-    `(def-twitter-async-method ~name ~action ~uri)))
+    `(def-streaming-method ~name ~action ~uri)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

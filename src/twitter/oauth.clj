@@ -16,17 +16,18 @@
 
 (defn sign-query
   "takes oauth credentials and returns a map of the signing parameters"
-  [oauth-creds action uri & {:keys [query]}]
+  [#^OauthCredentials oauth-creds action uri & {:keys [query]}]
 
   (if oauth-creds
-    (merge {:realm "Twitter API"}
-           (oa/credentials (:consumer oauth-creds)
-                           (:access-token oauth-creds)
-                           (:access-token-secret oauth-creds)
-                           action
-                           uri
-                           query))))
-
+    (into (sorted-map)
+          (merge {:realm "Twitter API"}
+                 (oa/credentials (:consumer oauth-creds)
+                                 (:access-token oauth-creds)
+                                 (:access-token-secret oauth-creds)
+                                 action
+                                 uri
+                                 query)))))
+  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (declare make-test-creds)
@@ -42,7 +43,7 @@
   [signing-map & {:keys [url-encode?] :or {url-encode? true}}]
 
   (let [val-transform (if url-encode? oas/url-encode identity)
-        s (reduce (fn [s [k v]] (format "%s%s=%s," s (name k) (val-transform (str v))))
+        s (reduce (fn [s [k v]] (format "%s%s=\"%s\"," s (name k) (val-transform (str v))))
                   "OAuth "
                   signing-map)]
     (.substring s 0 (dec (count s)))))

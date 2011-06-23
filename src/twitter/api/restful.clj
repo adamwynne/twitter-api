@@ -15,7 +15,7 @@
   [name action resource-path]
 
   (let [uri (make-uri *api-protocol* *api-site* *api-version* resource-path)]
-    `(def-twitter-sync-method ~name ~action ~uri)))
+    `(def-sync-method ~name ~action ~uri)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

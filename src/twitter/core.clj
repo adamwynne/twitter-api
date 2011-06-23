@@ -81,8 +81,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn http-args 
-  "takes uri action and optional args and returns the http parameters for the subsequent call"
+(defn process-http-args 
+  "takes uri action and optional args and returns the final uri and http parameters for the subsequent call"
   [#^keyword action
    #^String uri
    #^PersistentArrayMap arg-map]
@@ -100,68 +100,85 @@
                       (nil? body) (hash-map :headers (add-form-content-type headers) :body query)
                       :else (hash-map :query query :headers headers :body body))]
 
-    [final-uri (merge (dissoc arg-map :query :headers :body :params :oauth-creds) my-args)]))
+    [final-uri
+     (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :callbacks) my-args)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn stream-http-request 
-  ""
-  [#^keyword action
-   #^String uri
-   & args]
-
-  (let [arg-map (apply hash-map args)
-        
-        client (or (:client arg-map) (default-client))
-        callbacks (or (:callbacks arg-map) (default-callbacks))
-
-        [final-uri final-args] (http-args action uri (dissoc arg-map :client :on-success :on-failure))
-        
-        response (apply ac/stream-seq client action final-uri (apply concat final-args))
-        status (ac/status response)]
-
-    (println final-args)
-    (println final-uri)
-    [(ac/string response)] 
-    ;(doseq [r response-seq] (return-fn r))
-           ))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn sync-http-request 
+(defn http-request 
   "calls the action on the resource specified in the uri, signing with oauth in the headers
    you can supply args for async.http.client (e.g. :query, :body etc) but also you can give
    :params which will transform its keys from lisp-friendly dashes to http header-friendly _'s.
    So :params could be {:screen-name 'blah'} and it be merged with :query as {:screen_name 'blah'}"
-  [^keyword action
-   ^String uri
-   & args]
+  [create-response-fn
+   #^keyword action
+   #^String uri
+   #^PersistentArrayMap arg-map]
 
-  (let [arg-map (apply hash-map args)
+  (let [client (or (:client arg-map) (default-client))
+        callbacks (:callbacks arg-map)
         
-        client (or (:client arg-map) (default-client))
-        callbacks (or (:callbacks arg-map) (default-callbacks))
+        [final-uri final-args] (process-http-args action uri arg-map)
 
-        [final-uri final-args] (http-args action uri (dissoc arg-map :client :callbacks))
-        http-verb (if (= action :get) ac/GET ac/POST)]
+        response (create-response-fn client action final-uri final-args)]
 
-    (handle-response
-     callbacks
-     (ac/await
-      (apply http-verb client final-uri (apply concat final-args))))))
+    (handle-response callbacks (ac/await response))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro def-twitter-sync-method
-  "declares a synchronous twitter method that is named from the resource path"
-  [name action uri]
+(defmacro def-method
+  "declares a twitter method that is named from the resource path"
+  [name action uri create-response-fn default-callbacks]
 
   `(defn ~name
      [& args#]
-     
-     (apply sync-http-request
-            ~action
-            ~uri
-            args#)))
+
+     (let [arg-map# (merge {:callbacks ~default-callbacks}
+                           (apply hash-map args#))]
+           
+       (http-request ~create-response-fn
+                     ~action
+                     ~uri
+                     arg-map#))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn create-sync-response
+  "calls a synchronous method and returns the response"
+  [client action uri arg-map]
+  
+  (apply (if (= action :get) ac/GET ac/POST)
+         client
+         uri
+         (apply concat arg-map)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro def-sync-method
+  "declares a synchronous twitter method that is named from the resource path"
+  [name action uri]
+
+  `(def-method ~name ~action ~uri create-sync-response (sync-callbacks-default)))
+  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn create-streaming-response
+  "calls a streaming method and returns the response"
+  [client action uri arg-map]
+
+  (println action uri arg-map)
+  (apply ac/stream-seq
+         client
+         action
+         uri
+         (apply concat arg-map)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro def-streaming-method
+  "declares a streaming twitter method that is named from the resource path"
+  [name action uri]
+
+  `(def-method ~name ~action ~uri create-streaming-response (streaming-callbacks-default)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
