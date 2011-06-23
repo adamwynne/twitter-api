@@ -7,23 +7,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defstruct oauth-creds
-  :consumer
-  :access-token
-  :access-token-secret)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def *oauth-creds* (struct oauth-creds))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmacro with-oauth-creds
-  "rebinds the oauth creds to the supplied ones"
-  [^oauth-creds oauth-creds & body]
-  
-  `(binding [*oauth-creds* ~oauth-creds]
-     ~@body))
+(defrecord OauthCredentials
+    [consumer
+     #^String access-token
+     #^String access-token-secret])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -31,14 +18,23 @@
   "takes oauth credentials and returns a map of the signing parameters"
   [oauth-creds action uri & {:keys [query]}]
 
-  (merge {:realm "Twitter API"}
-         (oa/credentials (:consumer oauth-creds)
-                         (:access-token oauth-creds)
-                         (:access-token-secret oauth-creds)
-                         action
-                         uri
-                         query)))
+  (if oauth-creds
+    (merge {:realm "Twitter API"}
+           (oa/credentials (:consumer oauth-creds)
+                           (:access-token oauth-creds)
+                           (:access-token-secret oauth-creds)
+                           action
+                           uri
+                           query))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(declare make-test-creds)
+
+(deftest test-sign-query
+  (let [result (sign-query (make-test-creds) :get "http://www.cnn.com" :query {:test-param "true"})]
+    (is (:oauth_signature result))))
+  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn oauth-header-string 
@@ -75,12 +71,6 @@
         access-token "15321630-qagHj675nqKYYwFe2GOVq859V5TYkfOZai8GI4OB0"
         access-token-secret "7saU2FHfHGBFPDpBWYsrxiHnVrowmZFUNizpi1RZd8M"]
 
-    (struct oauth-creds consumer access-token access-token-secret)))
+    (OauthCredentials. consumer access-token access-token-secret)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(deftest test-sign-query-params
-  (let [result (sign-query (make-test-creds) :get "http://www.cnn.com" :query {:test-param "true"})]
-    (is (:oauth_signature result))))
-  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

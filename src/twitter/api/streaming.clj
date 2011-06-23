@@ -1,34 +1,27 @@
-(ns twitter-client.streaming
-  (:use )
-  (:require ))
+(ns twitter.api.streaming
+  (:use
+   [twitter.core]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def-twitter-streaming-method statuses-filter
-	:post
-	"stream.twitter.com/1/statuses/filter.json"
-	[]
-	[:count :delimited :follow :locations :track])
+(def *api-protocol* "http")
+(def *api-version* 1)
+(def *api-site* "stream.twitter.com")
 
-(def-twitter-streaming-method statuses-firehose
-	:get
-	"stream.twitter.com/1/statuses/firehose.json"
-	[]
-	[:count :delimited])
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def-twitter-streaming-method statuses-links
-	:get
-	"stream.twitter.com/1/statuses/links.json"
-	[]
-	[:count :delimited])
+(defmacro def-twitter-streaming-method
+  [name action resource-path]
 
-(def-twitter-streaming-method statuses-retweet
-	:get
-	"stream.twitter.com/1/statuses/retweets.json"
-	[]
-	[:delimited])
+  (let [uri (make-uri *api-protocol* *api-site* *api-version* resource-path)]
+    `(def-twitter-async-method ~name ~action ~uri)))
 
-(def-twitter-streaming-method statuses-sample
-	:get
-	"stream.twitter.com/1/statuses/sample.json"
-	[]
-	[:count :delimited])
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def-twitter-streaming-method statuses-filter :post "statuses/filter.json")
+(def-twitter-streaming-method statuses-firehose	:get "statuses/firehose.json")
+(def-twitter-streaming-method statuses-links :get "statuses/links.json")
+(def-twitter-streaming-method statuses-retweet :get "statuses/retweets.json")
+(def-twitter-streaming-method statuses-sample :get "statuses/sample.json")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

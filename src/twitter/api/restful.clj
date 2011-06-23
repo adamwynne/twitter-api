@@ -11,66 +11,141 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro def-rest-twitter-method
+(defmacro def-twitter-rest-method
   [name action resource-path]
 
   (let [uri (make-uri *api-protocol* *api-site* *api-version* resource-path)]
-    `(def-sync-twitter-method ~name ~action ~uri)))
+    `(def-twitter-sync-method ~name ~action ~uri)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def-rest-twitter-method public-timeline :get "statuses/public_timeline.json")
-(def-rest-twitter-method friends-timeline :get "statuses/friends_timeline.json")
-(def-rest-twitter-method user-timeline :get "statuses/user_timeline.json")
-(def-rest-twitter-method home-timeline :get "statuses/home_timeline.json")
-(def-rest-twitter-method mentions :get "statuses/mentions.json")
-(def-rest-twitter-method show-status :get "statuses/show.json")
-(def-rest-twitter-method update-status :post "statuses/update.json")
-(def-rest-twitter-method destroy-status :post "statuses/destroy.json")
+;; Accounts
+(def-twitter-rest-method verify-credentials :get "account/verify_credentials.json")
+(def-twitter-rest-method rate-limit-status :get "account/rate_limit_status.json")
+(def-twitter-rest-method account-totals :get "account/totals.json")
+(def-twitter-rest-method account-settings :get "account/settings.json")
+(def-twitter-rest-method update-account-settings :post "account/settings.json") 
+(def-twitter-rest-method update-profile-colors :post "account/update_profile_colors.json")
+(def-twitter-rest-method update-profile-image :post "account/update_profile_image.json")
+(def-twitter-rest-method update-profile-background-image :post "account/update_profile_background_image.json")
+(def-twitter-rest-method update-profile :post "account/update_profile.json")
 
-(def-rest-twitter-method show-user :get "users/show.json")
-(def-rest-twitter-method lookup-users :get "users/lookup.json")
-(def-rest-twitter-method search-users :get "users/search.json")
-(def-rest-twitter-method suggest-slugs :get "users/suggestions.json")
-(def-rest-twitter-method suggest-users-for-slug :get "users/suggestions/:slug.json")
+;; Blocks
+(def-twitter-rest-method create-block :post "blocks/create.json")
+(def-twitter-rest-method destroy-block :post "blocks/destroy.json")
+(def-twitter-rest-method block-exists :get "blocks/exists.json")
+(def-twitter-rest-method blocking-users :get "blocks/blocking.json")
+(def-twitter-rest-method blocking-user-ids :get "blocks/blocking/ids.json")
 
-(def-rest-twitter-method direct-messages :get "direct_messages.json")
-(def-rest-twitter-method sent-direct-messages :get "direct_messages/sent.json")
-(def-rest-twitter-method send-direct-message :post "direct_messages/new.json")
-(def-rest-twitter-method destroy-direct-message :post "direct_messages/destroy.json")
+;; Timeline
+(def-twitter-rest-method public-timeline :get "statuses/public_timeline.json")
+(def-twitter-rest-method home-timeline :get "statuses/home_timeline.json")
+(def-twitter-rest-method user-timeline :get "statuses/user_timeline.json")
+(def-twitter-rest-method mentions :get "statuses/mentions.json")
+(def-twitter-rest-method retweeted-by-me :get "statuses/retweeted_by_me.json")
+(def-twitter-rest-method retweeted-to-me :get "statuses/retweeted_to_me.json")
+(def-twitter-rest-method retweets-of-me :get "statuses/retweets_of_me.json")
 
-(def-rest-twitter-method create-friendship :post "friendships/create.json")
-(def-rest-twitter-method destroy-friendship :post "friendships/destroy.json")
-(def-rest-twitter-method show-friendship :get "friendships/show.json")
+;; Tweets
+(def-twitter-rest-method show-status :get "statuses/show/{:id}.json")
+(def-twitter-rest-method update-status :post "statuses/update.json")
+(def-twitter-rest-method destroy-status :post "statuses/destroy/{:id}.json")
+(def-twitter-rest-method retweet-status :post "statuses/retweet/{:id}.json")
+(def-twitter-rest-method show-retweets :get "statuses/retweets/{:id}.json")
+(def-twitter-rest-method retweeted-by :get "statuses/{:id}/retweeted_by.json")
+(def-twitter-rest-method retweeted-by-ids :get "statuses/{:id}/retweeted_by/ids.json")
 
-(def-rest-twitter-method friends-of :get "friends/ids.json")
+;; User
+(def-twitter-rest-method show-user :get "users/show.json")
+(def-twitter-rest-method lookup-users :get "users/lookup.json")
+(def-twitter-rest-method search-users :get "users/search.json")
+(def-twitter-rest-method suggest-slugs :get "users/suggestions.json")
+(def-twitter-rest-method suggest-users-for-slug :get "users/suggestions/{:slug}.json")
+;(def-twitter-rest-method profile-image-for-user :get "users/profile_image/{:screen_name}.format")
+(def-twitter-rest-method show-contributors :get "users/contributors.json")
+(def-twitter-rest-method show-contributees :get "users/contributees.json")
 
-(def-rest-twitter-method followers-of :get "followers/ids.json")
+;; Trends
+(def-twitter-rest-method trends :get "trends.json") 
+(def-twitter-rest-method current-trends :get "trends/current.json") 
+(def-twitter-rest-method daily-trends :get "trends/daily.json")
+(def-twitter-rest-method weekly-trends :get "trends/weekly.json")
 
-(def-rest-twitter-method verify-credentials :get "account/verify_credentials.json")
-(def-rest-twitter-method rate-limit-status :get "account/rate_limit_status.json")
-(def-rest-twitter-method end-session :post "account/end_session.json")
-(def-rest-twitter-method update-profile :post "account/update_profile.json")
-(def-rest-twitter-method update-delivery-device :post "account/update_delivery_device.json")
-(def-rest-twitter-method update-profile-colors :post "account/update_profile_colors.json")
-(def-rest-twitter-method update-profile-image :post "account/update_profile_image.json")
-(def-rest-twitter-method update-profile-background-image :post "account/update_profile_background_image.json")
+;; Local trends
+(def-twitter-rest-method location-trends :get "trends/available.json")
+(def-twitter-rest-method location-trend :get "trends/{:woeid}.json")
 
-(def-rest-twitter-method favorites :get "favorites.json")
-(def-rest-twitter-method create-favorite :post "favorites/create.json")
-(def-rest-twitter-method destroy-favorite :post "favorites/destroy.json")
+;; Lists
+(def-twitter-rest-method show-lists :get "lists.json")
+(def-twitter-rest-method show-list :get "lists/show.json")
+(def-twitter-rest-method list-memberships :get "lists/memberships.json")
+(def-twitter-rest-method list-subscriptions :get "lists/subscriptions.json")
+(def-twitter-rest-method list-statuses :get "lists/statuses.json")
+(def-twitter-rest-method create-list :post "lists/create.json")
+(def-twitter-rest-method update-list :post "lists/update.json")
+(def-twitter-rest-method destroy-list :post "lists/destroy.json")
 
-(def-rest-twitter-method notifications-follow :post "notifications/follow.json")
-(def-rest-twitter-method notifications-leave :post "notifications/leave.json")
+;; List members
+(def-twitter-rest-method list-members :get "lists/members.json")
+(def-twitter-rest-method check-member :get "lists/members/show.json")
+(def-twitter-rest-method add-member :post "lists/members/create.json")
+(def-twitter-rest-method add-members :post "lists/members/create_all.json")
+(def-twitter-rest-method remove-member :post "lists/members/destroy.json")
 
-(def-rest-twitter-method create-block :post "blocks/create.json")
-(def-rest-twitter-method destroy-block :post "blocks/destroy.json")
-(def-rest-twitter-method block-exists :get "blocks/exists.json")
-(def-rest-twitter-method blocking-users :get "blocks/blocking.json")
-(def-rest-twitter-method blocking-user-ids :get "blocks/blocking/ids.json")
+;; List subscribers
+(def-twitter-rest-method list-subscribers :get "lists/subscribers.json")
+(def-twitter-rest-method check-subscriber :get "lists/subscribers/show.json")
+(def-twitter-rest-method add-subscriber :post "lists/subscribers/create.json")
+(def-twitter-rest-method remove-subscriber :post "lists/subscribers/destroy.json")
 
-(def-rest-twitter-method saved-searches :get "saved_searches.json")
-(def-rest-twitter-method show-saved-search :get "saved_searches/show.json")
-(def-rest-twitter-method create-saved-search :post "saved_searches/create.json")
-(def-rest-twitter-method destroy-saved-search :post "saved_searches/destroy.json")
+;; Direct messages
+(def-twitter-rest-method direct-messages :get "direct_messages.json")
+(def-twitter-rest-method sent-direct-messages :get "direct_messages/sent.json")
+(def-twitter-rest-method send-direct-message :post "direct_messages/new.json")
+(def-twitter-rest-method destroy-direct-message :post "direct_messages/destroy/{:id}.json")
 
+;; Friendships
+(def-twitter-rest-method create-friendship :post "friendships/create.json")
+(def-twitter-rest-method destroy-friendship :post "friendships/destroy.json")
+(def-twitter-rest-method check-friendship :post "friendships/exists.json")
+(def-twitter-rest-method show-friendship :get "friendships/show.json")
+(def-twitter-rest-method incoming-friendship :get "friendships/incoming.json")
+(def-twitter-rest-method outgoing-friendship :get "friendships/outgoing.json")
+
+;; Friends and followers
+(def-twitter-rest-method show-friends :get "friends/ids.json")
+(def-twitter-rest-method show-followers :get "followers/ids.json")
+
+;; Favourites
+(def-twitter-rest-method favourites :get "favorites.json")
+(def-twitter-rest-method create-favourite :post "favorites/create/{:id}.json")
+(def-twitter-rest-method destroy-favourite :post "favorites/destroy/{:id}.json")
+
+;; Notifications
+(def-twitter-rest-method notifications-follow :post "notifications/follow.json")
+(def-twitter-rest-method notifications-leave :post "notifications/leave.json")
+
+;; Report spam
+(def-twitter-rest-method report-spam :post "report_spam.json") 
+
+;; Saved searches
+(def-twitter-rest-method saved-searches :get "saved_searches.json")
+(def-twitter-rest-method show-saved-search :get "saved_searches/show/{:id}.json")
+(def-twitter-rest-method create-saved-search :post "saved_searches/create.json")
+(def-twitter-rest-method destroy-saved-search :post "saved_searches/destroy/{:id}.json")
+
+;; Geo
+(def-twitter-rest-method search-places :get "geo/search.json")
+(def-twitter-rest-method similar-places :get "geo/similar_places.json")
+(def-twitter-rest-method reverse-geocode :get "geo/reverse_geocode.json")
+(def-twitter-rest-method show-place :get "geo/id/{:place_id}.json")
+(def-twitter-rest-method create-place :post "geo/place.json")
+
+;; Legal
+(def-twitter-rest-method legal-tos :get "legal/tos.json")
+(def-twitter-rest-method legal-privacy :get "legal/privacy.json")
+
+;; Help
+(def-twitter-rest-method help-test :get "help/test.json")
+(def-twitter-rest-method help-configuration :get "help/configuration.json")
+(def-twitter-rest-method help-languages :get "help/languages.json")

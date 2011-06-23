@@ -1,28 +1,15 @@
 (ns twitter.api.search
-  (:use )
-  (:require ))
+  (:use
+   [twitter.core]))
 
-(def-rest-twitter-method search
-  :get
-  "search.twitter.com/search.json"
-)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def-rest-twitter-method trends
-  :get
-  "search.twitter.com/trends.json"
-)
+(def *api-protocol* "http")
+(def *api-site* "search.twitter.com")
 
-(def-rest-twitter-method current-trends
-  :get
-  "search.twitter.com/trends/current.json"
-)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def-rest-twitter-method daily-trends
-  :get
-  "search.twitter.com/trends/daily.json"
-)
+(def-sync-twitter-method
+  search :get (make-uri *api-protocol* *api-site* "search.json"))
 
-(def-rest-twitter-method weekly-trends
-  :get
-  "search.twitter.com/trends/weekly.json"
-)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -7,8 +7,9 @@
 (defn transform-map
   "transforms the k/v pairs of a map using a supplied transformation function"
   [map-to-transform & {:keys [key-trans val-trans] :or {key-trans identity val-trans identity}}]
-  
-  (into {} (map (fn [[k v]] [(key-trans k) (val-trans v)]) map-to-transform)))
+
+  (if map-to-transform
+    (into {} (map (fn [[k v]] [(key-trans k) (val-trans v)]) map-to-transform))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
