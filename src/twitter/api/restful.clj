@@ -1,21 +1,19 @@
 (ns twitter.api.restful
   (:use
-   [twitter.core]
-   [twitter.oauth]))
+   [twitter.core])
+  (:import
+   (twitter.api ApiContext)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *api-protocol* "http")
-(def *api-version* 1)
-(def *api-site* "api.twitter.com")
+(def *rest-api* (ApiContext. "http" "api.twitter.com" 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-rest-method
   [name action resource-path]
 
-  (let [uri (make-uri *api-protocol* *api-site* *api-version* resource-path)]
-    `(def-sync-method ~name ~action ~uri)))
+  `(def-twitter-method def-sync-method ~*rest-api* ~name ~action ~resource-path))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

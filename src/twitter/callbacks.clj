@@ -84,7 +84,6 @@
   [chunk-handler-fn]
   
   (fn [response]
-    (println "helloooo")
     (doseq [chunk (ac/string response)]
       (chunk-handler-fn chunk))))
 
@@ -100,7 +99,7 @@
 
 (defn handle-response
   "takes a response and reacts to success or error"
-  [#^Callbacks callbacks response]
+  [^Callbacks callbacks response]
 
   (if (< (:code (ac/status response)) 400)
       ((:on-success callbacks) response)

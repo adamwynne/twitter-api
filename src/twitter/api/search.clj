@@ -1,15 +1,22 @@
 (ns twitter.api.search
   (:use
-   [twitter.core]))
+   [twitter.core])
+  (:import
+   (twitter.api ApiContext)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *api-protocol* "http")
-(def *api-site* "search.twitter.com")
+(def *search-api* (ApiContext. "http" "search.twitter.com" nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def-sync-twitter-method
-  search :get (make-uri *api-protocol* *api-site* "search.json"))
+(defmacro def-twitter-search-method
+  [name action resource-path]
+
+  `(def-twitter-method def-sync-method ~*search-api* ~name ~action ~resource-path))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def-twitter-search-method search :get "search.json")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
