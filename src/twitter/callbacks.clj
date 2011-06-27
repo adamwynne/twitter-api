@@ -61,6 +61,27 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn call-on-stream
+  "takes a response and returns a function thats takes a chunk as input and then calls a supplied handler
+   functon on the chunk"
+  [chunk-handler-fn]
+  
+  (fn [response]
+    (doseq [chunk (ac/string response)]
+      (chunk-handler-fn chunk))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn handle-response
+  "takes a response and reacts to success or error"
+  [^Callbacks callbacks response]
+
+  (if (< (:code (ac/status response)) 400)
+      ((:on-success callbacks) response)
+      ((:on-error callbacks) response)))
+  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn sync-callbacks-default
   "throws on error and returns the whole response to the caller"
   []
@@ -78,31 +99,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn call-on-stream
-  "takes a response and returns a function thats takes a chunk as input and then calls a supplied handler
-   functon on the chunk"
-  [chunk-handler-fn]
-  
-  (fn [response]
-    (doseq [chunk (ac/string response)]
-      (chunk-handler-fn chunk))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn streaming-callbacks-default
   "throws on error and prints out the streaming response to the caller"
   []
 
   (Callbacks. (call-on-stream println) #(ac/status %)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn handle-response
-  "takes a response and reacts to success or error"
-  [^Callbacks callbacks response]
-
-  (if (< (:code (ac/status response)) 400)
-      ((:on-success callbacks) response)
-      ((:on-error callbacks) response)))
-  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

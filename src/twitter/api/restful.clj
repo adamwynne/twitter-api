@@ -11,9 +11,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-rest-method
-  [name action resource-path]
+  [name action resource-path & rest]
 
-  `(def-twitter-method def-sync-method ~*rest-api* ~name ~action ~resource-path))
+  `(def-twitter-method def-sync-method ~*rest-api* ~name ~action ~resource-path ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -59,7 +59,9 @@
 (def-twitter-rest-method search-users :get "users/search.json")
 (def-twitter-rest-method suggest-slugs :get "users/suggestions.json")
 (def-twitter-rest-method suggest-users-for-slug :get "users/suggestions/{:slug}.json")
-;(def-twitter-rest-method profile-image-for-user :get "users/profile_image/{:screen_name}.format")
+; the redirect location is returned in the :header :location, or simply follow the redirects
+; or simply supply a custom client to follow the redirect automatically
+(def-twitter-rest-method profile-image-for-user :get "users/profile_image/{:screen_name}.format")
 (def-twitter-rest-method show-contributors :get "users/contributors.json")
 (def-twitter-rest-method show-contributees :get "users/contributees.json")
 
@@ -147,3 +149,4 @@
 (def-twitter-rest-method help-test :get "help/test.json")
 (def-twitter-rest-method help-configuration :get "help/configuration.json")
 (def-twitter-rest-method help-languages :get "help/languages.json")
+

@@ -40,7 +40,7 @@
 (defn default-client 
   "makes a default async client for the http comms"
   []
-  (memo-create-client :follow-redirects true))
+  (memo-create-client :follow-redirects false))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -91,14 +91,15 @@
 (defmacro def-method
   "declares a twitter method that is named from the resource path, with a function to create the response, and
    also the default callbacks appropriate for the type of call"
-  [name action uri create-response-fn default-callbacks]
+  [name action uri create-response-fn default-callbacks & {:as rest}]
 
   `(defn ~name
-     [& args#]
-
+     [& {:as args#}]
+     
      (let [arg-map# (merge {:callbacks ~default-callbacks}
-                           (apply hash-map args#))]
-           
+                           ~rest
+                           args#)]
+
        (http-request ~create-response-fn
                      ~action
                      ~uri
@@ -107,9 +108,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn create-sync-response
-  "calls a synchronous method and waits for, and then returns the response"
+  "calls a synchronous method waits for, and then returns the response"
   [client action uri arg-map]
-  
+
   (ac/await
    (apply (if (= action :get) ac/GET ac/POST)
           client
@@ -120,9 +121,9 @@
 
 (defmacro def-sync-method
   "declares a synchronous method that is named from the resource path"
-  [name action uri]
+  [name action uri & rest]
 
-  `(def-method ~name ~action ~uri create-sync-response (sync-callbacks-default)))
+  `(def-method ~name ~action ~uri create-sync-response (sync-callbacks-default) ~@rest))
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -140,17 +141,17 @@
 
 (defmacro def-streaming-method
   "declares a streaming method that is named from the resource path"
-  [name action uri]
+  [name action uri & rest]
 
-  `(def-method ~name ~action ~uri create-streaming-response (streaming-callbacks-default)))
+  `(def-method ~name ~action ~uri create-streaming-response (streaming-callbacks-default) ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-method
   "forms the full uri from the supplied params and declares the method using the supplied method-macro"
-  [method-macro api-context name action resource-path]
+  [method-macro api-context name action resource-path & rest]
 
   (let [uri (make-uri api-context resource-path)]
-    `(~method-macro ~name ~action ~uri)))
+    `(~method-macro ~name ~action ~uri ~@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
