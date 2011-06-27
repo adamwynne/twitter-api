@@ -6,7 +6,10 @@ This is an up-to-date twitter API wrapper that is based on the clojure async.htt
 
 The calls are declared with numerous macros that allow all sorts of fanciness. Note that unlike other API's, the parameters for each call are note hard-coding into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map that is supplied.
 
-`(show-user :oauth-creds )
+``` Clojure
+(def *creds* 
+(show-user :oauth-creds *creds* :params {:screen-name "AdamJWynne"})
+```
 
 ## License
 
