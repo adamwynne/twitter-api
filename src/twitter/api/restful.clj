@@ -8,9 +8,8 @@
 
 (def *rest-api* (ApiContext. "http" "api.twitter.com" 1))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmacro def-twitter-restful-method
+  "defines a restful method using the synchronous comms and the supplied api context"
   [name action resource-path & rest]
 
   `(def-twitter-method def-sync-method ~*rest-api* ~name ~action ~resource-path ~@rest))
@@ -44,7 +43,7 @@
 (def-twitter-restful-method retweeted-to-me :get "statuses/retweeted_to_me.json")
 (def-twitter-restful-method retweets-of-me :get "statuses/retweets_of_me.json")
 
-;; Tweets
+;; Statuses
 (def-twitter-restful-method show-status :get "statuses/show/{:id}.json")
 (def-twitter-restful-method update-status :post "statuses/update.json")
 (def-twitter-restful-method destroy-status :post "statuses/destroy/{:id}.json")

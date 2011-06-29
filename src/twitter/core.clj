@@ -20,11 +20,6 @@
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(deftest test-fix-keyword
-  (is (= (fix-keyword :my-test) :my_test)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn add-form-content-type
   "adds a content type of url-encoded-form to the supplied headers"
   [headers]
@@ -45,7 +40,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn process-http-args 
-  "takes uri action and optional args and returns the final uri and http parameters for the subsequent call"
+  "Takes uri, action and optional args and returns the final uri and http parameters for the subsequent call.
+   Note that the params are transformed (from lispy -'s to x-header-style _'s) and added to the query. So :params
+   could be {:screen-name 'blah'} and it be merged into :query as {:screen_name 'blah'}. The uri has the params
+   substituted in (so {:id} in the uri with use the :id in the :params map).Also, the oauth headers are added if required."
   [^keyword action
    ^String uri
    ^PersistentArrayMap arg-map]
@@ -70,9 +68,7 @@
 
 (defn http-request 
   "calls the action on the resource specified in the uri, signing with oauth in the headers
-   you can supply args for async.http.client (e.g. :query, :body etc) but also you can give
-   :params which will transform its keys from lisp-friendly dashes to http header-friendly _'s.
-   So :params could be {:screen-name 'blah'} and it be merged with :query as {:screen_name 'blah'}"
+   you can supply args for async.http.client (e.g. :query, :body, :headers etc)."
   [create-response-fn
    ^keyword action
    ^String uri
@@ -108,7 +104,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn create-sync-response
-  "calls a synchronous method waits for, and then returns the response"
+  "calls the appropriate synchronous method, waits for, and then returns the response"
   [client action uri arg-map]
 
   (ac/await

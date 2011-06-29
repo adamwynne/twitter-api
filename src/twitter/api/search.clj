@@ -8,12 +8,11 @@
 
 (def *search-api* (ApiContext. "http" "search.twitter.com" nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmacro def-twitter-search-method
-  [name action resource-path]
+  "defines a search method using the search api context and the synchronous comms"
+  [name action resource-path & rest]
 
-  `(def-twitter-method def-sync-method ~*search-api* ~name ~action ~resource-path))
+  `(def-twitter-method def-sync-method ~*search-api* ~name ~action ~resource-path ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

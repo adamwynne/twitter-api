@@ -8,12 +8,11 @@
 
 (def *streaming-api* (ApiContext. "http" "stream.twitter.com" 1))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmacro def-twitter-streaming-method
-  [name action resource-path]
+  "defines a streaming API method using the above api context"
+  [name action resource-path & rest]
 
-  `(def-twitter-method def-streaming-method ~*streaming-api* ~name ~action ~resource-path))
+  `(def-twitter-method def-streaming-method ~*streaming-api* ~name ~action ~resource-path ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -27,12 +26,11 @@
 
 (def *user-stream-api* (ApiContext. "https" "userstream.twitter.com" 2))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmacro def-twitter-user-streaming-method
-  [name action resource-path]
+  "defines a user streaming method using the above context"
+  [name action resource-path & rest]
 
-  `(def-twitter-method def-streaming-method ~*user-stream-api* ~name ~action ~resource-path))
+  `(def-twitter-method def-streaming-method ~*user-stream-api* ~name ~action ~resource-path ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
