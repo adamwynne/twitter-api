@@ -1,4 +1,4 @@
-	# twitter-api
+# twitter-api
 
 This is an up-to-date twitter API wrapper that is based on the clojure http.async.client library. It offers the full taxonomy of twitter API's (streaming, search and restful) and has been tested to be working. The test coverage is reasonably complete, but I suppose more could be added.
 
@@ -82,7 +82,9 @@ Just add the following to your project.clj file in the _dependencies_ section:
      (Callbacks. (call-on-stream #(println (:text (json/read-json %)))) 
      		 #(ac/status %))
 
-(statuses-filter :params {:track "Borat"} :oauth-creds *creds* :callbacks *custom-streaming-callback*)
+(statuses-filter :params {:track "Borat"}
+		 :oauth-creds *creds*
+		 :callbacks *custom-streaming-callback*)
 
 ```
 
@@ -90,7 +92,8 @@ Just add the following to your project.clj file in the _dependencies_ section:
 
 The calls are declared with numerous macros that allow all sorts of fanciness. Note that unlike other API's, the parameters for each call are not hard-coded into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map.
 
-Some points about making the calls:
+###Some points about making the calls:
+
 * You can authenticate or not, by including or omitting the _:oauth-creds_ keyword and value. The value should be a _twitter.oauth.OauthCredentials_ structure (usually the result of the _twitter.oauth/make-oauth-creds_ function)
 * The macros are designed so that you can define new functions, including new default params if you wish by composing functionality from the sub-macros/functions
 
@@ -112,7 +115,9 @@ $ lein jar
 
 ## Testing
 
-*NOTE:* You must populate the properties file *resources/test.config* before the tests will work. 
+###NOTE:
+You must populate the properties file *resources/test.config* before the tests will work. 
+
 * To get the app consumer keys, simply use the https://dev.twitter.com/apps/<app-id> link and select your app
 * To get the user keys, go to https://dev.twitter.com/apps/<app-id>/my_token
 
