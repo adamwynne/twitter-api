@@ -1,11 +1,11 @@
-# twitter-api
+	# twitter-api
 
 This is an up-to-date twitter API wrapper that is based on the clojure http.async.client library. It offers the full taxonomy of twitter API's (streaming, search and restful) and has been tested to be working. The test coverage is reasonably complete, but I suppose more could be added.
 
 ## Why did I make this library?
 * I felt the current offerings were a bit out of date
 * I wanted the efficiency of the async comms libraries
-* I needed some stuff from the headers returned by twitter (e.g. the rate-limiting stuff and etag)
+* I needed some stuff from the headers returned by twitter (i.e. the rate-limiting stuff and etag)
 * I wanted full API coverage (restful, streaming and search)
 
 ## Giant's upon whose shoulders I stood
@@ -26,7 +26,7 @@ Just add the following to your project.clj file in the _dependencies_ section:
 ### RESTful calls
 
 ```clojure
-(ns twitter.test.api.restful
+(ns mynamespace
   (:use
    [twitter.oauth]
    [twitter.callbacks]
@@ -58,7 +58,7 @@ Just add the following to your project.clj file in the _dependencies_ section:
 ### Streaming calls
 
 ```clojure
-(ns twitter.test.api.restful
+(ns mynamespace
   (:use
    [twitter.oauth]
    [twitter.callbacks]
@@ -82,7 +82,7 @@ Just add the following to your project.clj file in the _dependencies_ section:
      (Callbacks. (call-on-stream #(println (:text (json/read-json %)))) 
      		 #(ac/status %))
 
-(user-stream :oauth-creds *creds* :callbacks *custom-streaming-callback*)
+(statuses-filter :params {:track "Borat"} :oauth-creds *creds* :callbacks *custom-streaming-callback*)
 
 ```
 
@@ -91,7 +91,8 @@ Just add the following to your project.clj file in the _dependencies_ section:
 The calls are declared with numerous macros that allow all sorts of fanciness. Note that unlike other API's, the parameters for each call are not hard-coded into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map.
 
 Some points about making the calls:
-* You can authenticate or not, by including or omitting the _:oauth-creds_ keyword and value. The value should be a _twitter.oauth.OauthCredentials_ structure (usually the result of the _twitter.oauth/make-creds_ function)
+* You can authenticate or not, by including or omitting the _:oauth-creds_ keyword and value. The value should be a _twitter.oauth.OauthCredentials_ structure (usually the result of the _twitter.oauth/make-oauth-creds_ function)
+* The macros are designed so that you can define new functions, including new default params if you wish by composing functionality from the sub-macros/functions
 
 ## Building
 
