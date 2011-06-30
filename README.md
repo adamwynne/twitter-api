@@ -139,6 +139,6 @@ Please note that the testing will take some time (about a minute or so) as its a
 
 ## License
 
-Copyright (C) 2011 Adam Wynne
+Copyright (C) 2011 Adam Wynne - follow me on @AdamJWynne
 
 Distributed under the Eclipse Public License, the same as Clojure.
