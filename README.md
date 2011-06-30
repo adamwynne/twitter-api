@@ -2,7 +2,7 @@
 
 This is an up-to-date twitter API wrapper that is based on the clojure http.async.client library. It offers the full taxonomy of twitter API's (streaming, search and restful) and has been tested to be working. The test coverage is reasonably complete, but I suppose more could be added.
 
-# Why did I make this library?
+## Why did I make this library?
 * I felt the current offerings were a bit out of date
 * I wanted the efficiency of the async comms libraries
 * I needed some stuff from the headers returned by twitter (e.g. the rate-limiting stuff and etag)
@@ -53,17 +53,40 @@ Just add the following to your project.clj file in the _dependencies_ section:
 (show-friends :callbacks (Callbacks. sync-return-body sync-error-thrower)
 	      :params {:screen-name "AdamJWynne"})
 
+```
 
 ### Streaming calls
+
+```clojure
+(ns twitter.test.api.restful
+  (:use
+   [twitter.oauth]
+   [twitter.callbacks]
+   [twitter.api.streaming])
+  (:require
+   [clojure.contrib.json :as json]
+   [http.async.client :as ac])
+  (:import
+   (twitter.callbacks Callbacks)))
+
+(def *creds* (make-oauth-creds *app-consumer-key*
+			       *app-consumer-secret*
+			       *user-access-token*
+			       *user-access-token-secret*)
 
 ; retrieves the user stream and println's each status as it comes in
 (user-stream :oauth-creds *creds*)
 
+; supply a callback that only prints the text of the status
+(def *custom-streaming-callback* 
+     (Callbacks. (call-on-stream #(println (:text (json/read-json %)))) 
+     		 #(ac/status %))
+
+(user-stream :oauth-creds *creds* :callbacks *custom-streaming-callback*)
 
 ```
 
-
-## 
+## Usage
 
 The calls are declared with numerous macros that allow all sorts of fanciness. Note that unlike other API's, the parameters for each call are not hard-coded into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map.
 
@@ -73,6 +96,7 @@ Some points about making the calls:
 ## Building
 
 Simply use leiningen to build the library into a jar with:
+
 ```
 $ git clone git://github.com/adamwynne/twitter-api.git
 Cloning into twitter-api...
