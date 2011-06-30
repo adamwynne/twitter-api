@@ -8,7 +8,7 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 * I needed some stuff from the headers returned by twitter (i.e. the rate-limiting stuff and etag)
 * I wanted full API coverage (restful, streaming and search)
 
-## Giant's upon whose shoulders I stood
+## Giants upon whose shoulders I have stood
 
 * [http.async.client](https://github.com/neotyk/http.async.client) by Hubert Iwaniuk
 * [clj-oauth](https://github.com/mattrepl/clj-oauth) by Matt Revelle
