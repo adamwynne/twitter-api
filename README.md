@@ -18,7 +18,7 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 Just add the following to your project.clj file in the _dependencies_ section:
 
 ```
-[twitter-api "0.1.0"]
+[twitter-api "0.2.0"]
 ```
 
 ## Examples
@@ -30,9 +30,10 @@ Just add the following to your project.clj file in the _dependencies_ section:
   (:use
    [twitter.oauth]
    [twitter.callbacks]
+   [twitter.callbacks.handlers]
    [twitter.api.restful])
   (:import
-   (twitter.callbacks Callbacks)))
+   (twitter.callbacks.protocols SyncSingleCallback)))
 
 (def *creds* (make-oauth-creds *app-consumer-key*
 			       *app-consumer-secret*
@@ -50,7 +51,9 @@ Just add the following to your project.clj file in the _dependencies_ section:
 (show-friends :params {:screen-name "AdamJWynne"})
 
 ; use a custom callback function that only returns the body of the response
-(show-friends :callbacks (Callbacks. sync-return-body sync-error-thrower)
+(show-friends :callbacks (SyncSingleCallback. response-return-body 
+	      		 		      response-error-throw
+					      exception-rethrow)
 	      :params {:screen-name "AdamJWynne"})
 
 ```
@@ -62,25 +65,29 @@ Just add the following to your project.clj file in the _dependencies_ section:
   (:use
    [twitter.oauth]
    [twitter.callbacks]
+   [twitter.callbacks.handlers]
    [twitter.api.streaming])
   (:require
    [clojure.contrib.json :as json]
    [http.async.client :as ac])
   (:import
-   (twitter.callbacks Callbacks)))
+   (twitter.callbacks.protocols AsyncStreamingCallback)))
 
 (def *creds* (make-oauth-creds *app-consumer-key*
 			       *app-consumer-secret*
 			       *user-access-token*
 			       *user-access-token-secret*)
 
-; retrieves the user stream and println's each status as it comes in
-(user-stream :oauth-creds *creds*)
+; retrieves the user stream, waits 1 minute and then cancels the async call
+(def *response* (user-stream :oauth-creds *creds*))
+(Thread/sleep 60000)
+((:cancel (meta *response*)))
 
 ; supply a callback that only prints the text of the status
 (def *custom-streaming-callback* 
-     (Callbacks. (call-on-stream #(println (:text (json/read-json %)))) 
-     		 #(ac/status %))
+     (AsyncStreamingCallback. (comp println #(:text %) json/read-json bodypart-print) 
+     		 	      (comp println response-return-everything)
+			      exception-print))
 
 (statuses-filter :params {:track "Borat"}
 		 :oauth-creds *creds*
@@ -90,12 +97,13 @@ Just add the following to your project.clj file in the _dependencies_ section:
 
 ## Usage
 
-The calls are declared with numerous macros that allow all sorts of fanciness. Note that unlike other API's, the parameters for each call are not hard-coded into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map.
+Unlike other API's, the parameters for each call are not hard-coded into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map.
 
 ###Some points about making the calls:
 
 * You can authenticate or not, by including or omitting the _:oauth-creds_ keyword and value. The value should be a _twitter.oauth.OauthCredentials_ structure (usually the result of the _twitter.oauth/make-oauth-creds_ function)
-* The macros are designed so that you can define new functions, including new default params if you wish by composing functionality from the sub-macros/functions
+* The callbacks decide how the call will be carried out - be it a single or streaming call, or an async or sync call. See the twitter.callbacks.protocols to see how it works
+* You can declare new methods that use different callbacks by either supplying them to the def-twitter-method macro, or inline at run time (via the _:callbacks_ key/vaue)
 
 ## Building
 
@@ -126,12 +134,15 @@ You can use leiningen to test the library using the following snippet
 ```
 $ lein test
 Testing twitter.test.api.restful
+1928 [main] INFO com.ning.http.client.providers.netty.NettyAsyncHttpProvider - Number of application's worked threads is 4
 Testing twitter.test.api.search
 Testing twitter.test.api.streaming
+Testing twitter.test.callbacks
 Testing twitter.test.core
 Testing twitter.test.creds
+Testing twitter.test.request
 Testing twitter.test.utils
-Ran 25 tests containing 70 assertions.
+Ran 42 tests containing 106 assertions.
 0 failures, 0 errors.
 ```
 

@@ -1,6 +1,7 @@
 pom.xml
 *jar
 aw.config
+empty.config
 /lib/
 /classes/
 .lein-deps-sum

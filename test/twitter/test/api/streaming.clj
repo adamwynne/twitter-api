@@ -1,32 +1,31 @@
 (ns twitter.test.api.streaming
   (:use
    [clojure.test]
-   [twitter.test.creds]
-   [twitter.test.utils]
+   [twitter.test creds utils]
    [twitter.callbacks]
    [twitter.api.streaming])
   (:require
    [http.async.client :as ac])
   (:import
-   (twitter.callbacks Callbacks)))
+   (twitter.callbacks.protocols AsyncStreamingCallback)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn streaming-test-callback
+(defn async-streaming-nop-callback
+  "this callback does nothing with the results"
   []
-  (let [embed-status-fn (fn [response] {:status (ac/status response)})]
-    (Callbacks. embed-status-fn embed-status-fn)))
+  (AsyncStreamingCallback. (constantly nil) (constantly nil) (constantly nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-streaming
-  (is-200 statuses-filter :params {:track "BhandMeeting"} :callbacks (streaming-test-callback))
-  (is-200 statuses-sample :callbacks (streaming-test-callback)))
+  (is-async-200 statuses-filter :params {:track "BhandMeeting"} :callbacks (async-streaming-nop-callback))
+  (is-async-200 statuses-sample :callbacks (async-streaming-nop-callback)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-user-streaming
-  (is-200 user-stream :callbacks (streaming-test-callback)))
+  (is-async-200 user-stream :callbacks (async-streaming-nop-callback)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

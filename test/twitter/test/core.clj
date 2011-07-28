@@ -2,10 +2,7 @@
   (:use
    [clojure.test]
    [twitter.test.creds]
-   [twitter.oauth]
-   [twitter.api]
-   [twitter.utils]
-   [twitter.core])
+   [twitter oauth api utils core callbacks])
   (:import
    (twitter.api ApiContext)))
 
@@ -55,4 +52,4 @@
 (deftest test-fix-keyword
   (is (= (fix-keyword :my-test) :my_test)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

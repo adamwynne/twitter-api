@@ -1,6 +1,6 @@
 (ns twitter.api.restful
   (:use
-   [twitter.core])
+   [twitter core callbacks])
   (:import
    (twitter.api ApiContext)))
 
@@ -9,10 +9,10 @@
 (def *rest-api* (ApiContext. "http" "api.twitter.com" 1))
 
 (defmacro def-twitter-restful-method
-  "defines a restful method using the synchronous comms and the supplied api context"
+  "defines a synchronous, single method using the supplied api context"
   [name action resource-path & rest]
 
-  `(def-twitter-method def-sync-method ~*rest-api* ~name ~action ~resource-path ~@rest))
+  `(def-twitter-method ~*rest-api* (get-default-callbacks :sync :single) ~name ~action ~resource-path ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

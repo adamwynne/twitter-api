@@ -1,6 +1,6 @@
 (ns twitter.api.streaming
   (:use
-   [twitter.core])
+   [twitter core callbacks])
   (:import
    (twitter.api ApiContext)))
 
@@ -12,7 +12,7 @@
   "defines a streaming API method using the above api context"
   [name action resource-path & rest]
 
-  `(def-twitter-method def-streaming-method ~*streaming-api* ~name ~action ~resource-path ~@rest))
+  `(def-twitter-method ~*streaming-api* (get-default-callbacks :async :streaming) ~name ~action ~resource-path ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -30,7 +30,7 @@
   "defines a user streaming method using the above context"
   [name action resource-path & rest]
 
-  `(def-twitter-method def-streaming-method ~*user-stream-api* ~name ~action ~resource-path ~@rest))
+  `(def-twitter-method ~*user-stream-api* (get-default-callbacks :async :streaming) ~name ~action ~resource-path ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

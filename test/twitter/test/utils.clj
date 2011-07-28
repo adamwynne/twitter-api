@@ -6,6 +6,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmacro is-async-200
+  "checks to see if the response is HTTP return code 200, and then cancels it"
+  [fn-name & args]
+
+  `(let [response# (~fn-name :oauth-creds (make-test-creds) ~@args)]
+     (try
+       (try (is (= (:code (ac/status response#)) 200))
+            (finally ((:cancel (meta response#)))))
+       (catch java.util.concurrent.CancellationException e# nil))))
+
 (defmacro is-http-code
   "checks to see if the response is a specific HTTP return code"
   [code fn-name & args]
@@ -41,11 +51,9 @@
 
   (loop [curr-time-ms 0]
     (if (< curr-time-ms max-timeout-ms)
-      (when-not (try (poll-fn) (catch Exception e (do (println "exception caught: " e) nil)))
-        (println "sleeping for " wait-time-ms)
+      (when-not (try (poll-fn) (catch Exception e nil))
         (Thread/sleep wait-time-ms)
-        (recur (+ curr-time-ms wait-time-ms)))
-      (println "end of poll"))))
+        (recur (+ curr-time-ms wait-time-ms))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
