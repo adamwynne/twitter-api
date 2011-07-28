@@ -1,8 +1,7 @@
 (ns twitter.test.api.restful
   (:use
    [clojure.test]
-   [twitter.test.creds]
-   [twitter.test.utils]
+   [twitter.test creds utils]
    [twitter.callbacks]
    [twitter.api.restful]))
 
@@ -52,7 +51,7 @@
     (is-200 suggest-users-for-slug :params {:slug "sports"})
     (is-http-code 302 profile-image-for-user
                   :params {:screen-name *user-screen-name*}
-                  :callbacks (sync-callbacks-debug))
+                  :callbacks (callbacks-sync-single-debug))
     (is-200 show-contributees :params {:user-id user-id})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -75,9 +74,11 @@
   "create a list and then removes it"
   [list-id-name & body]
   
-  `(with-setup-teardown
+  `(with-setup-poll-teardown
      ~list-id-name
-     (get-in (create-list :oauth-creds (make-test-creds) :params {:name "mytestlistblumblum"}) [:body :id])
+     (get-in (create-list :oauth-creds (make-test-creds) :params {:name "mytestlistblumblum"})
+             [:body :id])
+     (list-statuses :oauth-creds (make-test-creds) :params {:list-id ~list-id-name})
      (destroy-list :oauth-creds (make-test-creds) :params {:list-id ~list-id-name})
      ~@body))
 
@@ -135,9 +136,11 @@
   "create a saved search and then removes it"
   [search-id-name & body]
   
-  `(with-setup-teardown
+  `(with-setup-poll-teardown
      ~search-id-name
-     (get-in (create-saved-search :oauth-creds (make-test-creds) :params {:query "sport"}) [:body :id])
+     (get-in (create-saved-search :oauth-creds (make-test-creds) :params {:query "sport"})
+             [:body :id])
+     (show-saved-search :oauth-creds (make-test-creds) :params {:id ~search-id-name})
      (destroy-saved-search :oauth-creds (make-test-creds) :params {:id ~search-id-name})
      ~@body))
 

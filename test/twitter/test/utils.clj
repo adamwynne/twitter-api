@@ -32,11 +32,29 @@
   (get-in (show-user :oauth-creds (make-test-creds) :params {:screen-name screen-name})
           [:body :status :id]))
 
-(defmacro with-setup-teardown
-  [id-name setup teardown & body]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn poll-until-no-error
+  "repeatedly tries the poll instruction, for a maximum time, or until the error disappears"
+  [poll-fn & {:keys [max-timeout-ms wait-time-ms]
+              :or {max-timeout-ms 60000 wait-time-ms 10000}} ]
+
+  (loop [curr-time-ms 0]
+    (if (< curr-time-ms max-timeout-ms)
+      (when-not (try (poll-fn) (catch Exception e (do (println "exception caught: " e) nil)))
+        (println "sleeping for " wait-time-ms)
+        (Thread/sleep wait-time-ms)
+        (recur (+ curr-time-ms wait-time-ms)))
+      (println "end of poll"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro with-setup-poll-teardown
+  [id-name setup poll teardown & body]
 
   `(let [~id-name ~setup]
-     (try ~@body
+     (try (poll-until-no-error (fn [] ~poll))
+          ~@body
           (finally ~teardown))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
