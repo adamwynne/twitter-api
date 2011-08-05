@@ -10,7 +10,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn fix-keyword
+(defn- fix-keyword
   "Takes a parameter name and replaces the - with a _"
   [param-name]
 
@@ -18,7 +18,7 @@
   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn add-form-content-type
+(defn- add-form-content-type
   "adds a content type of url-encoded-form to the supplied headers"
   [headers]
   (merge headers
@@ -37,7 +37,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-request-args 
+(defn- get-request-args 
   "takes uri, action and optional args and returns the final uri and http parameters for the subsequent call.
    Note that the params are transformed (from lispy -'s to x-header-style _'s) and added to the query. So :params
    could be {:screen-name 'blah'} and it be merged into :query as {:screen_name 'blah'}. The uri has the params
