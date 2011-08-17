@@ -50,7 +50,7 @@
   (let [params (transform-map (:params arg-map) :key-trans fix-keyword)
         body (:body arg-map)
         query (merge (:query arg-map) params)
-        
+
         final-uri (subs-uri uri params)
         oauth-map (sign-query (:oauth-creds arg-map) action final-uri :query query)
         headers (merge (:headers arg-map)
@@ -84,6 +84,8 @@
                        (:uri request-args)
                        (apply concat (:processed-args request-args)))]
 
+;    (println "body " (.getStringData request))
+
     (execute-request-callbacks client request callbacks)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,21 +94,21 @@
   "Declares a twitter method with the supplied name, HTTP verb and relative resource path.
    As part of the specification, it must have an :api and :callbacks member of the 'rest' list.
    From these it creates a uri, the api context and relative resource path. The default callbacks that are
-   supplied, determine how to make the call (in terms of the sync/async or single/streaming"
+   supplied, determine how to make the call (in terms of the sync/async or single/streaming)"
   [name action resource-path & rest]
 
-  (let [rest-map (apply sorted-map rest)
-        api-context (assert-throw (:api rest-map) "must include an ':api' entry in the params")
-        uri (make-uri api-context resource-path)]
-    
+  (let [rest-map (apply sorted-map rest)]
+
     `(defn ~name
        [& {:as args#}]
        
        (let [arg-map# (merge ~rest-map
-                             args#)]
+                             args#)
+             api-context# (assert-throw (:api arg-map#) "must include an ':api' entry in the params")
+             uri# (make-uri api-context# ~resource-path)]
 
          (http-request ~action
-                       ~uri
+                       uri#
                        arg-map#)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
