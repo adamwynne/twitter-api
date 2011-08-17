@@ -62,7 +62,7 @@
 
     {:action action
      :uri final-uri
-     :processed-args (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :callbacks)
+     :processed-args (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :api :callbacks)
                             my-args)}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -89,17 +89,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-method
-  "declares a twitter method with the supplied name, HTTP verb and relative resource path. It creates a uri,
-   the api context and relative resource path. The default callbacks that are supplied, determine how to make
-   the call (in terms of the sync/async or single/streaming"
-  [api-context default-callbacks name action resource-path & rest]
+  "Declares a twitter method with the supplied name, HTTP verb and relative resource path.
+   As part of the specification, it must have an :api and :callbacks member of the 'rest' list.
+   From these it creates a uri, the api context and relative resource path. The default callbacks that are
+   supplied, determine how to make the call (in terms of the sync/async or single/streaming"
+  [name action resource-path & rest]
 
-  (let [uri (make-uri api-context resource-path)]
+  (let [rest-map (apply sorted-map rest)
+        api-context (assert-throw (:api rest-map) "must include an ':api' entry in the params")
+        uri (make-uri api-context resource-path)]
+    
     `(defn ~name
        [& {:as args#}]
        
-       (let [arg-map# (merge {:callbacks ~default-callbacks}
-                             ~rest
+       (let [arg-map# (merge ~rest-map
                              args#)]
 
          (http-request ~action

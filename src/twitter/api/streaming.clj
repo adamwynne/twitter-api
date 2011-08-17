@@ -12,7 +12,7 @@
   "defines a streaming API method using the above api context"
   [name action resource-path & rest]
 
-  `(def-twitter-method ~*streaming-api* (get-default-callbacks :async :streaming) ~name ~action ~resource-path ~@rest))
+  `(def-twitter-method ~name ~action ~resource-path :api ~*streaming-api* :callbacks (get-default-callbacks :async :streaming) ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -30,7 +30,7 @@
   "defines a user streaming method using the above context"
   [name action resource-path & rest]
 
-  `(def-twitter-method ~*user-stream-api* (get-default-callbacks :async :streaming) ~name ~action ~resource-path ~@rest))
+  `(def-twitter-method ~name ~action ~resource-path :api ~*user-stream-api* :callbacks (get-default-callbacks :async :streaming) ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

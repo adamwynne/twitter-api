@@ -12,7 +12,7 @@
   "defines a search method using the search api context and the synchronous comms"
   [name action resource-path & rest]
 
-  `(def-twitter-method ~*search-api* (get-default-callbacks :sync :single) ~name ~action ~resource-path ~@rest))
+  `(def-twitter-method ~name ~action ~resource-path :api ~*search-api* :callbacks (get-default-callbacks :sync :single) ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

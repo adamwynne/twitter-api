@@ -7,12 +7,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def *rest-api* (ApiContext. "http" "api.twitter.com" 1))
+(def *rest-upload-api* (ApiContext. "http" "upload.twitter.com" 1))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-restful-method
   "defines a synchronous, single method using the supplied api context"
   [name action resource-path & rest]
 
-  `(def-twitter-method ~*rest-api* (get-default-callbacks :sync :single) ~name ~action ~resource-path ~@rest))
+  
+  `(def-twitter-method ~name ~action ~resource-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -51,6 +55,7 @@
 (def-twitter-restful-method show-retweets :get "statuses/retweets/{:id}.json")
 (def-twitter-restful-method retweeted-by :get "statuses/{:id}/retweeted_by.json")
 (def-twitter-restful-method retweeted-by-ids :get "statuses/{:id}/retweeted_by/ids.json")
+(def-twitter-restful-method update-with-media :post "statuses/update_with_media.json" :api *rest-upload-api*)
 
 ;; User
 (def-twitter-restful-method show-user :get "users/show.json")

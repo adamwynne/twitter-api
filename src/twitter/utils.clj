@@ -4,6 +4,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn assert-throw
+  "if the supplied arg is nil, throw with the exception text provided"
+  [val msg]
+
+  (or val (throw (Exception. msg))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn transform-map
   "transforms the k/v pairs of a map using a supplied transformation function"
   [map-to-transform & {:keys [key-trans val-trans] :or {key-trans identity val-trans identity}}]
