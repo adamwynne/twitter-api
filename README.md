@@ -18,7 +18,7 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 Just add the following to your project.clj file in the _dependencies_ section:
 
 ```
-[twitter-api "0.2.0"]
+[twitter-api "0.3.0"]
 ```
 
 ## Examples
@@ -55,6 +55,11 @@ Just add the following to your project.clj file in the _dependencies_ section:
 	      		 		      response-error-throw
 					      exception-rethrow)
 	      :params {:screen-name "AdamJWynne"})
+
+; upload a picture tweet with a text status attached, using the default sync-single callback
+(update-with-media :oauth-creds *creds*
+                   :body [(file-body-part "/pics/test.jpg")
+                          (status-body-part "testing")])
 
 ```
 
@@ -103,7 +108,7 @@ Unlike other API's, the parameters for each call are not hard-coded into their C
 
 * You can authenticate or not, by including or omitting the _:oauth-creds_ keyword and value. The value should be a _twitter.oauth.OauthCredentials_ structure (usually the result of the _twitter.oauth/make-oauth-creds_ function)
 * The callbacks decide how the call will be carried out - be it a single or streaming call, or an async or sync call. See the twitter.callbacks.protocols to see how it works
-* You can declare new methods that use different callbacks by either supplying them to the def-twitter-method macro, or inline at run time (via the _:callbacks_ key/vaue)
+* You can declare new methods that use different callbacks by either supplying them to the def-twitter-method macro, or inline at run time (via the _:callbacks_ key/vaue), or both!
 
 ## Building
 
@@ -134,15 +139,16 @@ You can use leiningen to test the library using the following snippet
 ```
 $ lein test
 Testing twitter.test.api.restful
-1928 [main] INFO com.ning.http.client.providers.netty.NettyAsyncHttpProvider - Number of application's worked threads is 4
+2719 [main] INFO com.ning.http.client.providers.netty.NettyAsyncHttpProvider - Number of application's worked threads is 4
 Testing twitter.test.api.search
 Testing twitter.test.api.streaming
 Testing twitter.test.callbacks
 Testing twitter.test.core
 Testing twitter.test.creds
 Testing twitter.test.request
+Testing twitter.test.upload
 Testing twitter.test.utils
-Ran 42 tests containing 106 assertions.
+Ran 47 tests containing 117 assertions.
 0 failures, 0 errors.
 ```
 

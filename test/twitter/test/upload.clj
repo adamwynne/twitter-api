@@ -3,7 +3,10 @@
    [clojure.test]
    [twitter.test utils creds]
    [twitter.request]
-   [twitter.api.restful]))
+   [twitter.api.restful])
+  (:import
+   (com.ning.http.multipart StringPart
+                            FilePart)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
