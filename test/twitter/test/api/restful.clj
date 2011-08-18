@@ -3,7 +3,9 @@
    [clojure.test]
    [twitter.test creds utils]
    [twitter.callbacks]
-   [twitter.api.restful]))
+   [twitter.api.restful])
+  (:import
+   (java.io File)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

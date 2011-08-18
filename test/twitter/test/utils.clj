@@ -1,6 +1,7 @@
 (ns twitter.test.utils
   (:use
    [clojure.test]
+   [twitter.utils]
    [twitter.test.creds]
    [twitter.api.restful]))
 
@@ -39,8 +40,9 @@
   "gets the id of the current status for the supplied screen name"
   [screen-name]
 
-  (get-in (show-user :oauth-creds (make-test-creds) :params {:screen-name screen-name})
-          [:body :status :id]))
+  (let [result (show-user :oauth-creds (make-test-creds) :params {:screen-name screen-name})]
+    (assert-throw (get-in result [:body :status :id])
+                  "could not retrieve the user's profile in 'show-user'")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -64,5 +66,17 @@
      (try (poll-until-no-error (fn [] ~poll))
           ~@body
           (finally ~teardown))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn classpath-file
+  "this loads a file from the classpath and returns an input stream"
+  [file-name]
+  
+  (assert-throw (.. (Thread/currentThread)
+                    (getContextClassLoader)
+                    (getResource file-name)
+                    (getFile))
+                (format "Cannot find file %s" file-name)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -53,3 +53,11 @@
   (is (= (#'twitter.core/fix-keyword :my-test) :my_test)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest test-get-file-ext
+  (is (= (get-file-ext "adam.ext") "ext"))
+  (is (nil? (get-file-ext "adam")))
+  (is (= (get-file-ext "adam/was/here.ext") "ext"))
+  (is (nil? (get-file-ext "adam/was/here.ext."))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

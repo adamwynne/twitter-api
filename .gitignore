@@ -2,6 +2,7 @@ pom.xml
 *jar
 aw.config
 empty.config
+.lein-failures
 /lib/
 /classes/
 .lein-deps-sum

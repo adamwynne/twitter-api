@@ -55,7 +55,12 @@
 (def-twitter-restful-method show-retweets :get "statuses/retweets/{:id}.json")
 (def-twitter-restful-method retweeted-by :get "statuses/{:id}/retweeted_by.json")
 (def-twitter-restful-method retweeted-by-ids :get "statuses/{:id}/retweeted_by/ids.json")
-(def-twitter-restful-method update-with-media :post "statuses/update_with_media.json" :api *rest-upload-api*)
+; Supply the status and file to the :body as a sequence using the functions 'file-body-part' and 'status-body-part'
+; i.e. :body [(file-body-part "/pics/mypic.jpg") (status-body-part "hello world")]
+; for an example, see twitter.test.file-upload
+(def-twitter-restful-method update-with-media :post "statuses/update_with_media.json"
+                                              :api *rest-upload-api*
+                                              :headers {:content-type "multipart/form-data"})
 
 ;; User
 (def-twitter-restful-method show-user :get "users/show.json")

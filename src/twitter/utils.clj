@@ -1,6 +1,4 @@
-(ns twitter.utils
-  (:use
-   [clojure.test]))
+(ns twitter.utils)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -33,5 +31,16 @@
           (if (pred [k v])
             (recur (assoc passes k v) fails (rest m))
             (recur passes (assoc fails k v) (rest m)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn get-file-ext
+  "retrieves the file extension portion from the filename"
+  [filename]
+
+  (let [dot-pos (.lastIndexOf filename ".")
+        result (.substring filename (inc dot-pos))]
+    (if (and (>= dot-pos 0) (> (count result) 0))
+      result)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

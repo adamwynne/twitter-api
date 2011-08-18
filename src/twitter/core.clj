@@ -5,8 +5,7 @@
   (:require
    [clojure.contrib.json :as json]
    [oauth.client :as oa]
-   [http.async.client :as ac]
-   [http.async.client.request :as req]))
+   [http.async.client :as ac]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -52,7 +51,12 @@
         query (merge (:query arg-map) params)
 
         final-uri (subs-uri uri params)
-        oauth-map (sign-query (:oauth-creds arg-map) action final-uri :query query)
+        
+        oauth-map (sign-query (:oauth-creds arg-map)
+                              action
+                              final-uri
+                              :query query)
+        
         headers (merge (:headers arg-map)
                        (if oauth-map {:Authorization (oauth-header-string oauth-map)}))
 
@@ -79,12 +83,10 @@
                       (throw (Exception. "need to specify a callback argument for http-request")))
         request-args (get-request-args action uri arg-map)
         
-        request (apply req/prepare-request
+        request (apply prepare-request-with-multi
                        (:action request-args)
                        (:uri request-args)
                        (apply concat (:processed-args request-args)))]
-
-;    (println "body " (.getStringData request))
 
     (execute-request-callbacks client request callbacks)))
 
