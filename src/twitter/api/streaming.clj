@@ -6,7 +6,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *streaming-api* (ApiContext. "http" "stream.twitter.com" 1))
+(def *streaming-api* (ApiContext. "https" "stream.twitter.com" 1))
 
 (defmacro def-twitter-streaming-method
   "defines a streaming API method using the above api context"
