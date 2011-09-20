@@ -1,4 +1,4 @@
-(defproject twitter-api/twitter-api "0.5.0"
+(defproject twitter-api/twitter-api "0.6.0-SNAPSHOT"
   :description "full twitter interface"
   :dev-dependencies [[org.slf4j/slf4j-simple "1.6.1"]
                      [lein-clojars "0.6.0"]
