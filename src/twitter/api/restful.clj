@@ -68,9 +68,9 @@
 (def-twitter-restful-method search-users :get "users/search.json")
 (def-twitter-restful-method suggest-slugs :get "users/suggestions.json")
 (def-twitter-restful-method suggest-users-for-slug :get "users/suggestions/{:slug}.json")
-; the redirect location is returned in the :header :location, or simply follow the redirects
+; the redirect location is returned in the :headers :location, or simply follow the redirects
 ; or supply a custom client to follow the redirect automatically
-(def-twitter-restful-method profile-image-for-user :get "users/profile_image/{:screen_name}.format")
+(def-twitter-restful-method profile-image-for-user :get "users/profile_image/{:screen_name}.jsonD")
 (def-twitter-restful-method show-contributors :get "users/contributors.json")
 (def-twitter-restful-method show-contributees :get "users/contributees.json")
 
