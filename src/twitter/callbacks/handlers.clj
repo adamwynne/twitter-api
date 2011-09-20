@@ -22,7 +22,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(declare twitter-throw)
+(declare get-twitter-error-message)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -49,14 +49,7 @@
   "throws the supplied error in an exception"
   [response]
 
-  (let [status (ac/status response)
-        body (json/read-json (ac/string response))
-
-        desc (or (:message (first (:errors body))) (:error body)) 
-        code (or (:code (first (:errors body))) (:code status))
-        req (:request body)]
-    
-    (apply twitter-throw (remove nil? (list req code desc)))))
+  (throw (Exception. (get-twitter-error-message response))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -84,17 +77,22 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- twitter-throw
-  "throws an exception populated with a message of what went wrong"
-  
-  ([req code desc]
-     (throw (Exception. (format "Twitter responded to request '%s' with error %d: %s" req code desc))))
-  ([code desc]
-     (throw (Exception. (format "Twitter responded to request with error %d: %s" code desc))))
-  ([desc]
-     (throw (Exception. (format "Twitter responded to request with error: %s" desc))))
-  ([]
-     (throw (Exception. "Twitter responded to request with an unknown error"))))
+(defn get-twitter-error-message
+  "interrogates a response for its twitter error message"
+  [response]
+
+  (let [status (ac/status response)
+        body (json/read-json (ac/string response))
+
+        desc (or (:message (first (:errors body))) (:error body)) 
+        code (or (:code (first (:errors body))) (:code status))
+        req (:request body)]
+    
+    (cond
+     (and req code desc) (format "Twitter responded to request '%s' with error %d: %s" req code desc)
+     (and code desc) (format "Twitter responded to request with error %d: %s" code desc)
+     desc (format "Twitter responded to request with error: %s" desc)
+     :default "Twitter responded to request with an unknown error")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -3,7 +3,7 @@
    [twitter.callbacks handlers protocols])
   (:require
    [http.async.client :as ac])
-  (import
+  (:import
    (twitter.callbacks.protocols SyncSingleCallback SyncStreamingCallback
                                 AsyncSingleCallback AsyncStreamingCallback)))
 
