@@ -1,82 +1,27 @@
 (ns twitter.test.utils
   (:use
    [clojure.test]
-   [twitter.utils]
-   [twitter.test.creds]
-   [twitter.api.restful]))
+   [twitter.utils]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro is-async-200
-  "checks to see if the response is HTTP return code 200, and then cancels it"
-  [fn-name & args]
-
-  `(let [response# (~fn-name :oauth-creds (make-test-creds) ~@args)]
-     (try
-       (try (is (= (:code (ac/status response#)) 200))
-            (finally ((:cancel (meta response#)))))
-       (catch java.util.concurrent.CancellationException e# nil))))
-
-(defmacro is-http-code
-  "checks to see if the response is a specific HTTP return code"
-  [code fn-name & args]
-
-  `(is (= (get-in (~fn-name :oauth-creds (make-test-creds) ~@args) [:status :code]) ~code)))
-
-(defmacro is-200
-  "checks to see if the response is HTTP 200"
-  [fn-name & args]
-
-  `(is-http-code 200 ~fn-name ~@args))
-
-(defn get-user-id
-  "gets the id of the supplied screen name"
-  [screen-name]
-
-  (get-in (show-user :oauth-creds (make-test-creds) :params {:screen-name screen-name})
-          [:body :id]))
-
-(defn get-current-status-id
-  "gets the id of the current status for the supplied screen name"
-  [screen-name]
-
-  (let [result (show-user :oauth-creds (make-test-creds) :params {:screen-name screen-name})]
-    (assert-throw (get-in result [:body :status :id])
-                  "could not retrieve the user's profile in 'show-user'")))
+(deftest test-transform-map
+  (is (= (transform-map {:a 0 :b 1 :c 2 :d 3} :key-trans name) {"a" 0, "b" 1, "c" 2, "d" 3}))
+  (is (= (transform-map {:a 0 :b 1 :c 2 :d 3} :val-trans inc) {:a 1 :b 2 :c 3 :d 4})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn poll-until-no-error
-  "repeatedly tries the poll instruction, for a maximum time, or until the error disappears"
-  [poll-fn & {:keys [max-timeout-ms wait-time-ms]
-              :or {max-timeout-ms 60000 wait-time-ms 10000}} ]
-
-  (loop [curr-time-ms 0]
-    (if (< curr-time-ms max-timeout-ms)
-      (when-not (try (poll-fn) (catch Exception e nil))
-        (Thread/sleep wait-time-ms)
-        (recur (+ curr-time-ms wait-time-ms))))))
+(deftest test-partition-map
+  (is (= (partition-map {:a 1 :b 2 :c 3 :d 4} (comp even? second)) [{:d 4, :b 2} {:c 3, :a 1}]))
+  (is (= (partition-map {:a 1 :b 2 :c 3 :d 4} (comp (partial < 0) second)) [{:d 4, :c 3, :b 2, :a 1} {}]))
+  (is (= (partition-map {} even?) [{} {}])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro with-setup-poll-teardown
-  [id-name setup poll teardown & body]
-
-  `(let [~id-name ~setup]
-     (try (poll-until-no-error (fn [] ~poll))
-          ~@body
-          (finally ~teardown))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn classpath-file
-  "this loads a file from the classpath and returns an input stream"
-  [file-name]
-  
-  (assert-throw (.. (Thread/currentThread)
-                    (getContextClassLoader)
-                    (getResource file-name)
-                    (getFile))
-                (format "Cannot find file %s" file-name)))
+(deftest test-get-file-ext
+  (is (= (get-file-ext "adam.ext") "ext"))
+  (is (nil? (get-file-ext "adam")))
+  (is (= (get-file-ext "adam/was/here.ext") "ext"))
+  (is (nil? (get-file-ext "adam/was/here.ext."))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

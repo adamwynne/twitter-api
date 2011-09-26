@@ -1,6 +1,7 @@
-(ns twitter.test.api.streaming
+(ns twitter.api.test.streaming
   (:use
    [clojure.test]
+   [twitter.test-utils.core]
    [twitter.test creds utils]
    [twitter.callbacks]
    [twitter.api.streaming])

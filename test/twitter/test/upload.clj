@@ -2,6 +2,7 @@
   (:use
    [clojure.test]
    [twitter.test utils creds]
+   [twitter.utils]
    [twitter.request]
    [twitter.api.restful])
   (:import
@@ -10,7 +11,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *test-image-file-name* (classpath-file "testimage.gif"))
+(def ^:dynamic *test-image-file-name* (classpath-file "testimage.gif"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

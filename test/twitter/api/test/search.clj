@@ -1,6 +1,7 @@
-(ns twitter.test.api.search
+(ns twitter.api.test.search
   (:use
    [clojure.test]
+   [twitter.test-utils.core]
    [twitter.test.creds]
    [twitter.test.utils]
    [twitter.callbacks]

@@ -44,3 +44,15 @@
       result)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn classpath-file
+  "this loads a file from the classpath and returns an input stream"
+  [file-name]
+  
+  (assert-throw (.. (Thread/currentThread)
+                    (getContextClassLoader)
+                    (getResource file-name)
+                    (getFile))
+                (format "Cannot find file %s" file-name)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -1,6 +1,6 @@
 (ns twitter.callbacks.handlers
   (:require
-   [clojure.contrib.json :as json]
+   [clojure.data.json :as json]
    [http.async.client :as ac]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

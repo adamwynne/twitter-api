@@ -3,9 +3,11 @@
    [clojure.test]
    [twitter callbacks oauth api utils request])
   (:require
-   [clojure.contrib.json :as json]
+   [clojure.data.json :as json]
    [oauth.client :as oa]
-   [http.async.client :as ac]))
+   [http.async.client :as ac])
+  (:import
+   (clojure.lang Keyword PersistentArrayMap)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -42,9 +44,9 @@
    could be {:screen-name 'blah'} and it be merged into :query as {:screen_name 'blah'}. The uri has the params
    substituted in (so {:id} in the uri with use the :id in the :params map). Also, the oauth headers are added
    if required."
-  [#^keyword action
-   #^String uri
-   #^PersistentArrayMap arg-map]
+  [^Keyword action
+   ^String uri
+   ^PersistentArrayMap arg-map]
 
   (let [params (transform-map (:params arg-map) :key-trans fix-keyword)
         body (:body arg-map)
@@ -74,9 +76,9 @@
 (defn http-request 
   "calls the action on the resource specified in the uri, signing with oauth in the headers
    you can supply args for async.http.client (e.g. :query, :body, :headers etc)."
-  [#^keyword action
-   #^String uri
-   #^PersistentArrayMap arg-map]
+  [^Keyword action
+   ^String uri
+   ^PersistentArrayMap arg-map]
 
   (let [client (or (:client arg-map) (default-client))
         callbacks (or (:callbacks arg-map)

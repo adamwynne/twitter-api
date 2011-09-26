@@ -18,7 +18,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *config* (load-config-file "test.config"))
+(def ^:dynamic *config* (load-config-file "test.config"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -31,11 +31,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *app-consumer-key* (assert-get "app.consumer.key"))
-(def *app-consumer-secret* (assert-get "app.consumer.secret"))
-(def *user-screen-name* (assert-get "user.screen.name"))
-(def *user-access-token* (assert-get "user.access.token"))
-(def *user-access-token-secret* (assert-get "user.access.token.secret"))
+(def ^:dynamic *app-consumer-key* (assert-get "app.consumer.key"))
+ 
+(def ^:dynamic *app-consumer-secret* (assert-get "app.consumer.secret"))
+(def ^:dynamic *user-screen-name* (assert-get "user.screen.name"))
+(def ^:dynamic *user-access-token* (assert-get "user.access.token"))
+(def ^:dynamic *user-access-token-secret* (assert-get "user.access.token.secret"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

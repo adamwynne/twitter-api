@@ -1,6 +1,7 @@
-(ns twitter.test.api.restful
+(ns twitter.api.test.restful
   (:use
    [clojure.test]
+   [twitter.test-utils.core]
    [twitter.test creds utils]
    [twitter.callbacks]
    [twitter.api.restful])

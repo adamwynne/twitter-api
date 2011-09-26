@@ -6,8 +6,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *rest-api* (ApiContext. "http" "api.twitter.com" 1))
-(def *rest-upload-api* (ApiContext. "http" "upload.twitter.com" 1))
+(def ^:dynamic *rest-api* (ApiContext. "http" "api.twitter.com" 1))
+(def ^:dynamic *rest-upload-api* (ApiContext. "http" "upload.twitter.com" 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

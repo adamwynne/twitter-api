@@ -6,7 +6,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *search-api* (ApiContext. "http" "search.twitter.com" nil))
+(def ^:dynamic *search-api* (ApiContext. "http" "search.twitter.com" nil))
 
 (defmacro def-twitter-search-method
   "defines a search method using the search api context and the synchronous comms"

@@ -6,7 +6,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *streaming-api* (ApiContext. "https" "stream.twitter.com" 1))
+(def ^:dynamic *streaming-api* (ApiContext. "https" "stream.twitter.com" 1))
 
 (defmacro def-twitter-streaming-method
   "defines a streaming API method using the above api context"
@@ -24,7 +24,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def *user-stream-api* (ApiContext. "https" "userstream.twitter.com" 2))
+(def ^:dynamic *user-stream-api* (ApiContext. "https" "userstream.twitter.com" 2))
 
 (defmacro def-twitter-user-streaming-method
   "defines a user streaming method using the above context"
