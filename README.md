@@ -15,7 +15,7 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 
 ##Leiningen
 
-_NOTE_ this library is fully tested under Clojure 1.3
+###NOTE: this library is fully tested under Clojure 1.3
 
 Just add the following to your project.clj file in the _dependencies_ section:
 
@@ -159,7 +159,7 @@ Please note that the testing will take some time (about a minute or so) as its a
 
 ## License
 
-This library made open-source by [StreamScience](https://streamscience.co)
+This library made open-source by [StreamScience](http://streamscience.co)
 
 Follow [@AdamJWynne](http://twitter.com/#!/adamjwynne) and [@StreamScience](http://twitter.com/#!/streamscience) to save kittens and make rainbows.
 
