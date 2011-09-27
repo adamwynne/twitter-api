@@ -15,6 +15,8 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 
 ##Leiningen
 
+_NOTE_ this library is fully tested under Clojure 1.3
+
 Just add the following to your project.clj file in the _dependencies_ section:
 
 ```
@@ -35,10 +37,10 @@ Just add the following to your project.clj file in the _dependencies_ section:
   (:import
    (twitter.callbacks.protocols SyncSingleCallback)))
 
-(def *creds* (make-oauth-creds *app-consumer-key*
-			       *app-consumer-secret*
-			       *user-access-token*
-			       *user-access-token-secret*)
+(def ^:dynamic *creds* (make-oauth-creds *app-consumer-key*
+     			       		 *app-consumer-secret*
+			       		 *user-access-token*
+			       		 *user-access-token-secret*)
 
 ; simply retrieves the user, authenticating with the above credentials
 ; note that anything in the :params map gets the -'s converted to _'s
@@ -78,10 +80,10 @@ Just add the following to your project.clj file in the _dependencies_ section:
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
-(def *creds* (make-oauth-creds *app-consumer-key*
-			       *app-consumer-secret*
-			       *user-access-token*
-			       *user-access-token-secret*)
+(def ^:dynamic *creds* (make-oauth-creds *app-consumer-key*
+			       		 *app-consumer-secret*
+			       		 *user-access-token*
+			       		 *user-access-token-secret*)
 
 ; retrieves the user stream, waits 1 minute and then cancels the async call
 (def *response* (user-stream :oauth-creds *creds*))
@@ -89,7 +91,8 @@ Just add the following to your project.clj file in the _dependencies_ section:
 ((:cancel (meta *response*)))
 
 ; supply a callback that only prints the text of the status
-(def *custom-streaming-callback* 
+(def ^:dynamic 
+     *custom-streaming-callback* 
      (AsyncStreamingCallback. (comp println #(:text %) json/read-json bodypart-print) 
      		 	      (comp println response-return-everything)
 			      exception-print))
@@ -156,6 +159,10 @@ Please note that the testing will take some time (about a minute or so) as its a
 
 ## License
 
-Copyright (C) 2011 Adam Wynne - follow me on @AdamJWynne
+This library made open-source by [StreamScience](https://streamscience.co)
+
+Follow [@AdamJWynne](http://twitter.com/#!/adamjwynne) and [@StreamScience](http://twitter.com/#!/streamscience) to save kittens and make rainbows.
+
+Copyright (C) 2011 StreamScience
 
 Distributed under the Eclipse Public License, the same as Clojure.
