@@ -5,7 +5,8 @@
   (:require
    [http.async.client.util :as requ]
    [http.async.client.request :as req]
-   [http.async.client :as ac])
+   [http.async.client :as ac]
+   [clojure.string :as string])
   (:import (com.ning.http.client Cookie
                                  FluentCaseInsensitiveStringsMap
 				 PerRequestConfig
@@ -45,13 +46,22 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn- add-to-req
+  [rb kvs f]
+
+  (doseq [[k v] kvs] (f rb
+                        (if (keyword? k) (name k) k)
+                        (if (coll? v)
+                          (string/join "," v)
+                          (str v)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn- add-headers
   "adds the headers to the requestbuilder"
   [rb headers]
 
-  (doseq [[k v] headers] (.addHeader rb
-                                     (if (keyword? k) (name k) k)
-                                     (str v))))
+  (add-to-req rb headers #(.addHeader %1 %2 %3)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -76,9 +86,7 @@
   "adds the query parameters to the requestbuilder"
   [rb query]
 
-  (doseq [[k v] query] (.addQueryParameter rb
-                                           (if (keyword? k) (name k) k)
-                                           (str v))))
+  (add-to-req rb query #(.addQueryParameter %1 %2 %3)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
