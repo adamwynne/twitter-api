@@ -1,4 +1,4 @@
-(defproject twitter-api/twitter-api "0.6.2"
+(defproject twitter-api/twitter-api "0.6.3"
   :description "full twitter interface"
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.clojure/data.json "0.1.1"]

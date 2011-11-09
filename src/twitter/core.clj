@@ -5,7 +5,8 @@
   (:require
    [clojure.data.json :as json]
    [oauth.client :as oa]
-   [http.async.client :as ac])
+   [http.async.client :as ac]
+   [clojure.string :as string])
   (:import
    (clojure.lang Keyword PersistentArrayMap)))
 
@@ -17,6 +18,14 @@
 
   (keyword (.replace (name param-name) \- \_)))
   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- fix-colls
+  "Turns collections into their string, comma-sep equivalents"
+  [val]
+
+  (if (coll? val) (string/join "," val) val))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- add-form-content-type
@@ -48,7 +57,7 @@
    ^String uri
    ^PersistentArrayMap arg-map]
 
-  (let [params (transform-map (:params arg-map) :key-trans fix-keyword)
+  (let [params (transform-map (:params arg-map) :key-trans fix-keyword :val-trans fix-colls)
         body (:body arg-map)
         query (merge (:query arg-map) params)
 

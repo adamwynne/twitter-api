@@ -75,8 +75,6 @@
 (def-twitter-restful-method show-contributees :get "users/contributees.json")
 
 ;; Trends
-(def-twitter-restful-method trends :get "trends.json") 
-(def-twitter-restful-method current-trends :get "trends/current.json") 
 (def-twitter-restful-method daily-trends :get "trends/daily.json")
 (def-twitter-restful-method weekly-trends :get "trends/weekly.json")
 

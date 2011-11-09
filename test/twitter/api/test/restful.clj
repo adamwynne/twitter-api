@@ -60,8 +60,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-trends
-  (is-200 trends) 
-  (is-200 current-trends) 
   (is-200 daily-trends)
   (is-200 weekly-trends))
 
@@ -69,7 +67,7 @@
 
 (deftest test-local-trends
   (is-200 location-trends) 
-  (is-200 current-trends :params {:woeid 1}))
+  (is-200 location-trends :params {:woeid 1}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
