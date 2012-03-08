@@ -54,7 +54,7 @@ Just add the following to your project.clj file in the _dependencies_ section:
 
 ; use a custom callback function that only returns the body of the response
 (show-friends :callbacks (SyncSingleCallback. response-return-body 
-	      		 		      response-error-throw
+	      		 		      response-throw-error
 					      exception-rethrow)
 	      :params {:screen-name "AdamJWynne"})
 
