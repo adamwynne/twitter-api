@@ -75,7 +75,7 @@ Just add the following to your project.clj file in the _dependencies_ section:
    [twitter.callbacks.handlers]
    [twitter.api.streaming])
   (:require
-   [clojure.contrib.json :as json]
+   [clojure.data.json :as json]
    [http.async.client :as ac])
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
@@ -93,7 +93,7 @@ Just add the following to your project.clj file in the _dependencies_ section:
 ; supply a callback that only prints the text of the status
 (def ^:dynamic 
      *custom-streaming-callback* 
-     (AsyncStreamingCallback. (comp println #(:text %) json/read-json bodypart-print) 
+     (AsyncStreamingCallback. (comp println #(:text %) json/read-json #(str %2)) 
      		 	      (comp println response-return-everything)
 			      exception-print))
 
