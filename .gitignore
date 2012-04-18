@@ -6,3 +6,4 @@ empty.config
 /lib/
 /classes/
 .lein-deps-sum
+.lein-plugins

@@ -7,6 +7,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def ^:dynamic *rest-api* (ApiContext. "http" "api.twitter.com" 1))
+(def ^:dynamic *secure-rest-api* (ApiContext. "https" "api.twitter.com" 1))
 (def ^:dynamic *rest-upload-api* (ApiContext. "http" "upload.twitter.com" 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,6 +78,12 @@
 ;; Trends
 (def-twitter-restful-method daily-trends :get "trends/daily.json")
 (def-twitter-restful-method weekly-trends :get "trends/weekly.json")
+
+;; Oauth
+(def-twitter-restful-method oauth-authenticate :get "oauth/authenticate.json" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-authorize :get "oauth/authorize.json" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-access-token :post "oauth/access_token.json" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-request-token :post "oauth/request_token.json" :api *secure-rest-api*)
 
 ;; Local trends
 (def-twitter-restful-method location-trends :get "trends/available.json")
