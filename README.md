@@ -40,7 +40,7 @@ Just add the following to your project.clj file in the _dependencies_ section:
 (def ^:dynamic *creds* (make-oauth-creds *app-consumer-key*
      			       		 *app-consumer-secret*
 			       		 *user-access-token*
-			       		 *user-access-token-secret*)
+			       		 *user-access-token-secret*))
 
 ; simply retrieves the user, authenticating with the above credentials
 ; note that anything in the :params map gets the -'s converted to _'s
@@ -83,10 +83,10 @@ Just add the following to your project.clj file in the _dependencies_ section:
 (def ^:dynamic *creds* (make-oauth-creds *app-consumer-key*
 			       		 *app-consumer-secret*
 			       		 *user-access-token*
-			       		 *user-access-token-secret*)
+			       		 *user-access-token-secret*))
 
 ; retrieves the user stream, waits 1 minute and then cancels the async call
-(def *response* (user-stream :oauth-creds *creds*))
+(def ^:dynamic *response* (user-stream :oauth-creds *creds*))
 (Thread/sleep 60000)
 ((:cancel (meta *response*)))
 
