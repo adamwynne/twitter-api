@@ -80,10 +80,10 @@
 (def-twitter-restful-method weekly-trends :get "trends/weekly.json")
 
 ;; Oauth
-(def-twitter-restful-method oauth-authenticate :get "oauth/authenticate.json" :api *secure-rest-api*)
-(def-twitter-restful-method oauth-authorize :get "oauth/authorize.json" :api *secure-rest-api*)
-(def-twitter-restful-method oauth-access-token :post "oauth/access_token.json" :api *secure-rest-api*)
-(def-twitter-restful-method oauth-request-token :post "oauth/request_token.json" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-authenticate :get "oauth/authenticate" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-authorize :get "oauth/authorize" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-access-token :post "oauth/access_token" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-request-token :post "oauth/request_token" :api *secure-rest-api*)
 
 ;; Local trends
 (def-twitter-restful-method location-trends :get "trends/available.json")
