@@ -7,7 +7,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def ^:dynamic *rest-api* (ApiContext. "http" "api.twitter.com" 1))
-(def ^:dynamic *secure-rest-api* (ApiContext. "https" "api.twitter.com" 1))
+(def ^:dynamic *oauth-api* (ApiContext. "https" "api.twitter.com"))
 (def ^:dynamic *rest-upload-api* (ApiContext. "http" "upload.twitter.com" 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,10 +80,10 @@
 (def-twitter-restful-method weekly-trends :get "trends/weekly.json")
 
 ;; Oauth
-(def-twitter-restful-method oauth-authenticate :get "oauth/authenticate" :api *secure-rest-api*)
-(def-twitter-restful-method oauth-authorize :get "oauth/authorize" :api *secure-rest-api*)
-(def-twitter-restful-method oauth-access-token :post "oauth/access_token" :api *secure-rest-api*)
-(def-twitter-restful-method oauth-request-token :post "oauth/request_token" :api *secure-rest-api*)
+(def-twitter-restful-method oauth-authenticate :get "oauth/authenticate" :api *oauth-api*)
+(def-twitter-restful-method oauth-authorize :get "oauth/authorize" :api *oauth-api*)
+(def-twitter-restful-method oauth-access-token :post "oauth/access_token" :api *oauth-api*)
+(def-twitter-restful-method oauth-request-token :post "oauth/request_token" :api *oauth-api*)
 
 ;; Local trends
 (def-twitter-restful-method location-trends :get "trends/available.json")
