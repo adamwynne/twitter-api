@@ -9,6 +9,10 @@
      ^String host
      ^Integer version])
 
+(defn make-api-context
+  ([protocol host] (ApiContext. protocol host nil))
+  ([protocol host version] (ApiContext. protocol host version)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn make-uri 

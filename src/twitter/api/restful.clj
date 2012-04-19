@@ -1,14 +1,14 @@
 (ns twitter.api.restful
   (:use
-   [twitter core callbacks])
+   [twitter core callbacks api])
   (:import
    (twitter.api ApiContext)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def ^:dynamic *rest-api* (ApiContext. "http" "api.twitter.com" 1))
-(def ^:dynamic *oauth-api* (ApiContext. "https" "api.twitter.com"))
-(def ^:dynamic *rest-upload-api* (ApiContext. "http" "upload.twitter.com" 1))
+(def ^:dynamic *rest-api* (make-api-context "http" "api.twitter.com" 1))
+(def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
+(def ^:dynamic *rest-upload-api* (make-api-context "http" "upload.twitter.com" 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
