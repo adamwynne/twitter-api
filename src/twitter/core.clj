@@ -43,7 +43,7 @@
 (defn default-client 
   "makes a default async client for the http comms"
   []
-  (memo-create-client :follow-redirects false))
+  (memo-create-client :follow-redirects false :request-timeout -1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
