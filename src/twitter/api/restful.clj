@@ -40,7 +40,6 @@
 (def-twitter-restful-method blocking-user-ids :get "blocks/blocking/ids.json")
 
 ;; Timeline
-(def-twitter-restful-method public-timeline :get "statuses/public_timeline.json")
 (def-twitter-restful-method home-timeline :get "statuses/home_timeline.json")
 (def-twitter-restful-method user-timeline :get "statuses/user_timeline.json")
 (def-twitter-restful-method mentions :get "statuses/mentions.json")
