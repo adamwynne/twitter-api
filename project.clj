@@ -1,4 +1,4 @@
-(defproject twitter-api/twitter-api "0.6.12"
+(defproject twitter-api/twitter-api "0.6.13"
   :description "full twitter interface"
   :plugins [[lein-clojars "0.7.0"]
             [lein-swank "1.4.4"]]
