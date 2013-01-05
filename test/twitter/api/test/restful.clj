@@ -13,24 +13,20 @@
 (deftest test-account
   (is-200 verify-credentials)
   (is-200 rate-limit-status)
-  (is-200 account-totals)
   (is-200 account-settings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-blocks
-  (is (thrown? Exception (block-exists :oauth-creds (make-test-creds) :params {:screen-name "blahblah"})))
-  (is-200 blocking-users)
-  (is-200 blocking-user-ids))
+  (is-200 block-list)
+  (is-200 blocking-users))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-timeline
+  (is-200 mentions)
   (is-200 home-timeline)
   (is-200 user-timeline)
-  (is-200 mentions)
-  (is-200 retweeted-by-me)
-  (is-200 retweeted-to-me)
   (is-200 retweets-of-me))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -38,9 +34,12 @@
 (deftest test-statuses
   (let [status-id (get-current-status-id *user-screen-name*)]
     (is-200 show-status :params {:id status-id})
-    (is-200 show-retweets :params {:id status-id})
-    (is-200 retweeted-by :params {:id status-id})
-    (is-200 retweeted-by-ids :params {:id status-id})))
+    (is-200 show-retweets :params {:id status-id})))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest test-search
+  (is-200 search-tweets :params {:q "clojure"}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -51,22 +50,14 @@
     (is-200 search-users :params {:q "john smith"})
     (is-200 suggest-slugs :params {:user-id user-id})
     (is-200 suggest-users-for-slug :params {:slug "sports"})
-    (is-http-code 302 profile-image-for-user
-                  :params {:screen-name *user-screen-name*}
-                  :callbacks (callbacks-sync-single-debug))
     (is-200 show-contributees :params {:user-id user-id})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-trends
-  (is-200 daily-trends)
-  (is-200 weekly-trends))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(deftest test-local-trends
-  (is-200 location-trends) 
-  (is-200 location-trends :params {:woeid 1}))
+  (is-200 place-trends :params {:id 1})
+  (is-200 available-trends)
+  (is-200 closest-trends :params {:lat 37.781157 :long -122.400612831116}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
