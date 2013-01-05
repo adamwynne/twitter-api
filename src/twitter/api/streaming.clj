@@ -18,8 +18,6 @@
 
 (def-twitter-streaming-method statuses-filter :post "statuses/filter.json")
 (def-twitter-streaming-method statuses-firehose	:get "statuses/firehose.json")
-(def-twitter-streaming-method statuses-links :get "statuses/links.json")
-(def-twitter-streaming-method statuses-retweet :get "statuses/retweets.json")
 (def-twitter-streaming-method statuses-sample :get "statuses/sample.json")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,5 +33,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def-twitter-user-streaming-method user-stream :get "user.json")
+(def-twitter-user-streaming-method site-stream :get "site.json")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
