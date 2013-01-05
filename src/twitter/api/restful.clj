@@ -32,16 +32,16 @@
 (def-twitter-restful-method remove-profile-banner :post "account/remove_profile_banner.json")
 (def-twitter-restful-method remove-profile-banner :post "account/update_profile_banner.json")
 (def-twitter-restful-method profile-banner :post "users/profile_banner.json")
-(def-twitter-restful-method rate-limit-status :get "account/rate_limit_status.json")
+(def-twitter-restful-method rate-limit-status :get "application/rate_limit_status.json")
 
 ;; Blocks
-(def-twitter-restful-method block-exists :get "blocks/list.json")
+(def-twitter-restful-method block-list :get "blocks/list.json")
 (def-twitter-restful-method blocking-users :get "blocks/ids.json")
 (def-twitter-restful-method create-block :post "blocks/create.json")
 (def-twitter-restful-method destroy-block :post "blocks/destroy.json")
 
 ;; Timeline
-(def-twitter-restful-method mentions_timeline :get "statuses/mentions_timeline.json")
+(def-twitter-restful-method mentions :get "statuses/mentions_timeline.json")
 (def-twitter-restful-method user-timeline :get "statuses/user_timeline.json")
 (def-twitter-restful-method home-timeline :get "statuses/home_timeline.json")
 (def-twitter-restful-method retweets-of-me :get "statuses/retweets_of_me.json")
