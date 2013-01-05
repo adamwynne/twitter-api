@@ -3,10 +3,10 @@
 # TODO: remove the ##'s and populate to make the tests work
 
 # the consumer oauth stuff for your app
-##app.consumer.key=
-##app.consumer.secret=
+app.consumer.key=
+app.consumer.secret=
 
 # this user must be authed on the above app
-##user.screen.name=
-##user.access.token=
-##user.access.token.secret=
+user.screen.name=
+user.access.token=
+user.access.token.secret=
