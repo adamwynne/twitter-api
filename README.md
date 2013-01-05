@@ -15,7 +15,7 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 
 ##Leiningen
 
-###NOTE: this library is fully tested under Clojure 1.3
+###NOTE: this library is fully tested under Clojure 1.4
 
 Just add the following to your project.clj file in the _dependencies_ section:
 
