@@ -23,6 +23,23 @@ Just add the following to your project.clj file in the _dependencies_ section:
 [twitter-api "0.6.13"]
 ```
 
+## Usage
+
+All of the functions follow Twitter's naming conventions; we convert a resource's path into the function name. For example:
+
+* `https://api.twitter.com/1.1/<b>account/settings</b>` is available as `account-settings`
+* `https://api.twitter.com/1.1/<b>statuses/update_with_media</b>` is available as `statuses-update-with-media`
+
+Parameters are uniform across the functions. All calls can accept:
+
+* `:oauth-creds` is the result of the `make-oauth-creds` function.
+* `:params` is a map of parameters to pass, eg, `list_id=123` would be `{:list-id 123}`
+* `:headers` adds or overrides any of the request headers sent to Twitter.
+* `:verb` overrides the HTTP verb used to make the request, for resources that support it (eg, `account-settings`)
+* `:callbacks` attaches a custom callback to the request.
+
+All of the API calls will return the full HTTP response of the request, including headers.
+
 ## Examples
 
 ### RESTful calls
@@ -37,29 +54,29 @@ Just add the following to your project.clj file in the _dependencies_ section:
   (:import
    (twitter.callbacks.protocols SyncSingleCallback)))
 
-(def ^:dynamic *creds* (make-oauth-creds *app-consumer-key*
-     			       		 *app-consumer-secret*
-			       		 *user-access-token*
-			       		 *user-access-token-secret*))
+(def my-creds (make-oauth-creds *app-consumer-key*
+     			       		    *app-consumer-secret*
+			       		        *user-access-token*
+			       		        *user-access-token-secret*))
 
 ; simply retrieves the user, authenticating with the above credentials
 ; note that anything in the :params map gets the -'s converted to _'s
-(show-user :oauth-creds *creds* :params {:screen-name "AdamJWynne"})
+(users-show :oauth-creds my-creds :params {:screen-name "AdamJWynne"})
 
 ; supplying a custom header
-(show-user :oauth-creds *creds* :params {:screen-name "AdamJWynne"} :headers {:x-blah-blah "value"})
+(users-show :oauth-creds my-creds :params {:screen-name "AdamJWynne"} :headers {:x-blah-blah "value"})
 
 ; shows the users friends, without using authentication
-(show-friends :params {:screen-name "AdamJWynne"})
+(friendships-show :params {:screen-name "AdamJWynne"})
 
 ; use a custom callback function that only returns the body of the response
-(show-friends :callbacks (SyncSingleCallback. response-return-body 
+(friendships-show :callbacks (SyncSingleCallback. response-return-body 
 	      		 		      response-throw-error
 					      exception-rethrow)
 	      :params {:screen-name "AdamJWynne"})
 
 ; upload a picture tweet with a text status attached, using the default sync-single callback
-(update-with-media :oauth-creds *creds*
+(statuses-update-with-media :oauth-creds *creds*
                    :body [(file-body-part "/pics/test.jpg")
                           (status-body-part "testing")])
 
@@ -80,13 +97,13 @@ Just add the following to your project.clj file in the _dependencies_ section:
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
-(def ^:dynamic *creds* (make-oauth-creds *app-consumer-key*
-			       		 *app-consumer-secret*
-			       		 *user-access-token*
-			       		 *user-access-token-secret*))
+(def my-creds (make-oauth-creds *app-consumer-key*
+			       		        *app-consumer-secret*
+			       		        *user-access-token*
+			       		        *user-access-token-secret*))
 
 ; retrieves the user stream, waits 1 minute and then cancels the async call
-(def ^:dynamic *response* (user-stream :oauth-creds *creds*))
+(def ^:dynamic *response* (user :oauth-creds my-creds))
 (Thread/sleep 60000)
 ((:cancel (meta *response*)))
 
@@ -98,12 +115,12 @@ Just add the following to your project.clj file in the _dependencies_ section:
 			      exception-print))
 
 (statuses-filter :params {:track "Borat"}
-		 :oauth-creds *creds*
+		 :oauth-creds my-creds
 		 :callbacks *custom-streaming-callback*)
 
 ```
 
-## Usage
+## Notes
 
 Unlike other API's, the parameters for each call are not hard-coded into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map.
 
