@@ -27,8 +27,8 @@ Just add the following to your project.clj file in the _dependencies_ section:
 
 All of the functions follow Twitter's naming conventions; we convert a resource's path into the function name. For example:
 
-* `https://api.twitter.com/1.1/<b>account/settings</b>` is available as `account-settings`
-* `https://api.twitter.com/1.1/<b>statuses/update_with_media</b>` is available as `statuses-update-with-media`
+* `https://api.twitter.com/1.1/account/settings` is available as `account-settings`
+* `https://api.twitter.com/1.1/statuses/update_with_media` is available as `statuses-update-with-media`
 
 Parameters are uniform across the functions. All calls can accept:
 
