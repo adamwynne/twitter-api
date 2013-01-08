@@ -33,14 +33,14 @@
   "gets the id of the supplied screen name"
   [screen-name]
 
-  (get-in (show-user :oauth-creds (make-test-creds) :params {:screen-name screen-name})
+  (get-in (users-show :oauth-creds (make-test-creds) :params {:screen-name screen-name})
           [:body :id]))
 
 (defn get-current-status-id
   "gets the id of the current status for the supplied screen name"
   [screen-name]
 
-  (let [result (show-user :oauth-creds (make-test-creds) :params {:screen-name screen-name})]
+  (let [result (users-show :oauth-creds (make-test-creds) :params {:screen-name screen-name})]
     (assert-throw (get-in result [:body :status :id])
                   "could not retrieve the user's profile in 'show-user'")))
 

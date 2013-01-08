@@ -98,7 +98,8 @@
                        (:action request-args)
                        (:uri request-args)
                        (apply concat (:processed-args request-args)))]
-
+ ;;   (println "request-args" request-args)
+    
     (execute-request-callbacks client request callbacks)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -108,20 +109,17 @@
    As part of the specification, it must have an :api and :callbacks member of the 'rest' list.
    From these it creates a uri, the api context and relative resource path. The default callbacks that are
    supplied, determine how to make the call (in terms of the sync/async or single/streaming)"
-  [name action resource-path & rest]
-
+  [fn-name default-action resource-path & rest]
   (let [rest-map (apply sorted-map rest)]
-
-    `(defn ~name
+;;    (println "Creating" fn-name)
+    `(defn ~fn-name
        [& {:as args#}]
        
-       (let [arg-map# (merge ~rest-map
-                             args#)
+       (let [arg-map# (merge ~rest-map args#)
              api-context# (assert-throw (:api arg-map#) "must include an ':api' entry in the params")
+             action# (or (:verb args#) ~default-action)
              uri# (make-uri api-context# ~resource-path)]
-
-         (http-request ~action
-                       uri#
-                       arg-map#)))))
+         
+         (http-request action# uri# arg-map#)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

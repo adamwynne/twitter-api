@@ -39,14 +39,14 @@
 
 (deftest test-image-upload
   (let [status "testing"
-        result (update-with-media
+        result (statuses-update-with-media
                  :oauth-creds (make-test-creds)
                  :body [(file-body-part *test-image-file-name*)
                         (status-body-part status)])
         result-text (:text (:body result))]
     (is (= (:code (:status result)) 200))
     (is (= (.substring result-text 0 (count status)) status))
-    (destroy-status :oauth-creds (make-test-creds) :params {:id (:id (:body result))})))
+    (statuses-destroy-id :oauth-creds (make-test-creds) :params {:id (:id (:body result))})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -13,149 +13,152 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-restful-method
-  "defines a synchronous, single method using the supplied api context"
-  [name action resource-path & rest]
-  `(def-twitter-method ~name ~action ~resource-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest))
+  [default-action resource-path & rest]
+  (let [json-path (str resource-path ".json") ; v1.1 is .json only.
+        dashed-name (clojure.string/replace resource-path #"[^a-zA-Z]+" "-") ; convert group of symbols to a dash 
+        clean-name (clojure.string/replace dashed-name #"-$" "") ; drop trailing dashes
+        fn-name (symbol clean-name)]
+    `(def-twitter-method ~fn-name ~default-action ~json-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;; Accounts
-(def-twitter-restful-method account-settings :get "account/settings.json")
-(def-twitter-restful-method verify-credentials :get "account/verify_credentials.json")
-(def-twitter-restful-method update-account-settings :post "account/settings.json") 
-(def-twitter-restful-method update-delivery-device :post "account/update_delivery_device.json")
-(def-twitter-restful-method update-profile :post "account/update_profile.json")
-(def-twitter-restful-method update-profile-background-image :post "account/update_profile_background_image.json")
-(def-twitter-restful-method update-profile-colors :post "account/update_profile_colors.json")
-(def-twitter-restful-method update-profile-image :post "account/update_profile_image.json")
-(def-twitter-restful-method remove-profile-banner :post "account/remove_profile_banner.json")
-(def-twitter-restful-method remove-profile-banner :post "account/update_profile_banner.json")
-(def-twitter-restful-method profile-banner :post "users/profile_banner.json")
-(def-twitter-restful-method rate-limit-status :get "application/rate_limit_status.json")
+(def-twitter-restful-method :get  "account/settings")
+(def-twitter-restful-method :get  "account/verify_credentials")
+(def-twitter-restful-method :post "account/settings") 
+(def-twitter-restful-method :post "account/update_delivery_device")
+(def-twitter-restful-method :post "account/update_profile")
+(def-twitter-restful-method :post "account/update_profile_background_image")
+(def-twitter-restful-method :post "account/update_profile_colors")
+(def-twitter-restful-method :post "account/update_profile_image")
+(def-twitter-restful-method :post "account/remove_profile_banner")
+(def-twitter-restful-method :post "account/update_profile_banner")
+(def-twitter-restful-method :post "users/profile_banner")
+(def-twitter-restful-method :get  "application/rate_limit_status")
 
 ;; Blocks
-(def-twitter-restful-method block-list :get "blocks/list.json")
-(def-twitter-restful-method blocking-users :get "blocks/ids.json")
-(def-twitter-restful-method create-block :post "blocks/create.json")
-(def-twitter-restful-method destroy-block :post "blocks/destroy.json")
+(def-twitter-restful-method :get  "blocks/list")
+(def-twitter-restful-method :get  "blocks/ids")
+(def-twitter-restful-method :post "blocks/create")
+(def-twitter-restful-method :post "blocks/destroy")
 
 ;; Timeline
-(def-twitter-restful-method mentions :get "statuses/mentions_timeline.json")
-(def-twitter-restful-method user-timeline :get "statuses/user_timeline.json")
-(def-twitter-restful-method home-timeline :get "statuses/home_timeline.json")
-(def-twitter-restful-method retweets-of-me :get "statuses/retweets_of_me.json")
+(def-twitter-restful-method :get "statuses/mentions_timeline")
+(def-twitter-restful-method :get "statuses/user_timeline")
+(def-twitter-restful-method :get "statuses/home_timeline")
+(def-twitter-restful-method :get "statuses/retweets_of_me")
 
 ;; Statuses
-(def-twitter-restful-method show-retweets :get "statuses/retweets/{:id}.json")
-(def-twitter-restful-method show-status :get "statuses/show/{:id}.json")
-(def-twitter-restful-method destroy-status :post "statuses/destroy/{:id}.json")
-(def-twitter-restful-method update-status :post "statuses/update.json")
-(def-twitter-restful-method retweet-status :post "statuses/retweet/{:id}.json")
-(def-twitter-restful-method oembed-status :get "statuses/oembed.json")
+(def-twitter-restful-method :get  "statuses/retweets/{:id}")
+(def-twitter-restful-method :get  "statuses/show/{:id}")
+(def-twitter-restful-method :post "statuses/destroy/{:id}")
+(def-twitter-restful-method :post "statuses/update.json")
+(def-twitter-restful-method :post "statuses/retweet/{:id}")
+(def-twitter-restful-method :get  "statuses/oembed.json")
 ; Supply the status and file to the :body as a sequence using the functions 'file-body-part' and 'status-body-part'
 ; i.e. :body [(file-body-part "/pics/mypic.jpg") (status-body-part "hello world")]
 ; for an example, see twitter.test.file-upload
-(def-twitter-restful-method update-with-media :post "statuses/update_with_media.json"
-                                              :api *rest-upload-api*
-                                              :headers {:content-type "multipart/form-data"})
+(def-twitter-restful-method :post "statuses/update_with_media"
+                            :api *rest-upload-api*
+                            :headers {:content-type "multipart/form-data"})
 
 ;; Search
-(def-twitter-restful-method search-tweets :get "search/tweets.json")
+(def-twitter-restful-method :get "search/tweets")
 
 ;; User
-(def-twitter-restful-method show-user :get "users/show.json")
-(def-twitter-restful-method lookup-users :get "users/lookup.json")
-(def-twitter-restful-method search-users :get "users/search.json")
-(def-twitter-restful-method show-contributees :get "users/contributees.json")
-(def-twitter-restful-method show-contributors :get "users/contributors.json")
-(def-twitter-restful-method suggest-slugs :get "users/suggestions.json")
-(def-twitter-restful-method suggest-users-for-slug :get "users/suggestions/{:slug}.json")
-(def-twitter-restful-method suggestion-users-for-slug-members :get "users/suggestions/{:slug}/members.json")
+(def-twitter-restful-method :get "users/show")
+(def-twitter-restful-method :get "users/lookup")
+(def-twitter-restful-method :get "users/search")
+(def-twitter-restful-method :get "users/contributees")
+(def-twitter-restful-method :get "users/contributors")
+(def-twitter-restful-method :get "users/suggestions")
+(def-twitter-restful-method :get "users/suggestions/{:slug}")
+(def-twitter-restful-method :get "users/suggestions/{:slug}/members")
 
 ;; Trends
-(def-twitter-restful-method place-trends :get "trends/place.json")
-(def-twitter-restful-method available-trends :get "trends/available.json")
-(def-twitter-restful-method closest-trends :get "trends/closest.json")
+(def-twitter-restful-method :get "trends/place")
+(def-twitter-restful-method :get "trends/available")
+(def-twitter-restful-method :get "trends/closest")
 
 
 ;; Oauth
-(def-twitter-restful-method oauth-authenticate :get "oauth/authenticate" :api *oauth-api*)
-(def-twitter-restful-method oauth-authorize :get "oauth/authorize" :api *oauth-api*)
-(def-twitter-restful-method oauth-access-token :post "oauth/access_token" :api *oauth-api*)
-(def-twitter-restful-method oauth-request-token :post "oauth/request_token" :api *oauth-api*)
+(def-twitter-restful-method :get  "oauth/authenticate" :api *oauth-api*)
+(def-twitter-restful-method :get  "oauth/authorize" :api *oauth-api*)
+(def-twitter-restful-method :post "oauth/access_token" :api *oauth-api*)
+(def-twitter-restful-method :post "oauth/request_token" :api *oauth-api*)
 
 ;; Lists
-(def-twitter-restful-method show-lists :get "lists/list.json")
-(def-twitter-restful-method list-statuses :get "lists/statuses.json")
-(def-twitter-restful-method show-list :get "lists/show.json")
-(def-twitter-restful-method list-memberships :get "lists/memberships.json")
-(def-twitter-restful-method list-subscriptions :get "lists/subscriptions.json")
-(def-twitter-restful-method create-list :post "lists/create.json")
-(def-twitter-restful-method update-list :post "lists/update.json")
-(def-twitter-restful-method destroy-list :post "lists/destroy.json")
+(def-twitter-restful-method :get  "lists/list")
+(def-twitter-restful-method :get  "lists/statuses")
+(def-twitter-restful-method :get  "lists/show")
+(def-twitter-restful-method :get  "lists/memberships")
+(def-twitter-restful-method :get  "lists/subscriptions")
+(def-twitter-restful-method :post "lists/create")
+(def-twitter-restful-method :post "lists/update")
+(def-twitter-restful-method :post "lists/destroy")
 
 ;; List members
-(def-twitter-restful-method remove-member :post "lists/members/destroy.json")
-(def-twitter-restful-method remove-members :post "lists/members/destroy_all.json")
-(def-twitter-restful-method list-members :get "lists/members.json")
-(def-twitter-restful-method check-member :get "lists/members/show.json")
-(def-twitter-restful-method add-member :post "lists/members/create.json")
-(def-twitter-restful-method add-members :post "lists/members/create_all.json")
+(def-twitter-restful-method :post "lists/members/destroy")
+(def-twitter-restful-method :post "lists/members/destroy_all")
+(def-twitter-restful-method :get  "lists/members")
+(def-twitter-restful-method :get  "lists/members/show")
+(def-twitter-restful-method :post "lists/members/create")
+(def-twitter-restful-method :post "lists/members/create_all")
 
 ;; List subscribers
-(def-twitter-restful-method list-subscribers :get "lists/subscribers.json")
-(def-twitter-restful-method check-subscriber :get "lists/subscribers/show.json")
-(def-twitter-restful-method add-subscriber :post "lists/subscribers/create.json")
-(def-twitter-restful-method remove-subscriber :post "lists/subscribers/destroy.json")
+(def-twitter-restful-method :get  "lists/subscribers")
+(def-twitter-restful-method :get  "lists/subscribers/show")
+(def-twitter-restful-method :post "lists/subscribers/create")
+(def-twitter-restful-method :post "lists/subscribers/destroy")
 
 ;; Direct messages
-(def-twitter-restful-method direct-messages :get "direct_messages.json")
-(def-twitter-restful-method sent-direct-messages :get "direct_messages/sent.json")
-(def-twitter-restful-method show-direct-message :get "direct_messages/show.json")
-(def-twitter-restful-method send-direct-message :post "direct_messages/new.json")
-(def-twitter-restful-method destroy-direct-message :post "direct_messages/destroy.json")
+(def-twitter-restful-method :get  "direct_messages")
+(def-twitter-restful-method :get  "direct_messages/sent")
+(def-twitter-restful-method :get  "direct_messages/show")
+(def-twitter-restful-method :post "direct_messages/new")
+(def-twitter-restful-method :post "direct_messages/destroy")
 
 ;; Friendships
-(def-twitter-restful-method lookup-friendships :get "friendships/lookup.json")
-(def-twitter-restful-method create-friendship :post "friendships/create.json")
-(def-twitter-restful-method destroy-friendship :post "friendships/destroy.json")
-(def-twitter-restful-method update-friendship :post "friendships/update.json")
-(def-twitter-restful-method show-friendship :get "friendships/show.json")
-(def-twitter-restful-method incoming-friendship :get "friendships/incoming.json")
-(def-twitter-restful-method outgoing-friendship :get "friendships/outgoing.json")
+(def-twitter-restful-method :get  "friendships/lookup")
+(def-twitter-restful-method :post "friendships/create")
+(def-twitter-restful-method :post "friendships/destroy")
+(def-twitter-restful-method :post "friendships/update")
+(def-twitter-restful-method :get  "friendships/show")
+(def-twitter-restful-method :get  "friendships/incoming")
+(def-twitter-restful-method :get  "friendships/outgoing")
 
 ;; Friends and followers
-(def-twitter-restful-method show-friends :get "friends/ids.json")
-(def-twitter-restful-method list-friends :get "friends/list.json")
-(def-twitter-restful-method show-followers :get "followers/ids.json")
-(def-twitter-restful-method list-followers :get "followers/list.json")
+(def-twitter-restful-method :get "friends/ids")
+(def-twitter-restful-method :get "friends/list")
+(def-twitter-restful-method :get "followers/ids")
+(def-twitter-restful-method :get "followers/list")
 
 ;; Favourites
-(def-twitter-restful-method favourites :get "favorites/list.json")
-(def-twitter-restful-method destroy-favourite :post "favorites/destroy.json")
-(def-twitter-restful-method create-favourite :post "favorites/create.json")
+(def-twitter-restful-method :get  "favorites/list")
+(def-twitter-restful-method :post "favorites/destroy")
+(def-twitter-restful-method :post "favorites/create")
 
 ;; Report spam
-(def-twitter-restful-method report-spam :post "users/report_spam.json") 
+(def-twitter-restful-method :post "users/report_spam") 
 
 ;; Saved searches
-(def-twitter-restful-method saved-searches :get "saved_searches/list.json")
-(def-twitter-restful-method show-saved-search :get "saved_searches/show/{:id}.json")
-(def-twitter-restful-method create-saved-search :post "saved_searches/create.json")
-(def-twitter-restful-method destroy-saved-search :post "saved_searches/destroy/{:id}.json")
+(def-twitter-restful-method :get  "saved_searches/list")
+(def-twitter-restful-method :get  "saved_searches/show/{:id}")
+(def-twitter-restful-method :post "saved_searches/create")
+(def-twitter-restful-method :post "saved_searches/destroy/{:id}")
 
 ;; Geo
-(def-twitter-restful-method show-place :get "geo/id/{:place_id}.json")
-(def-twitter-restful-method reverse-geocode :get "geo/reverse_geocode.json")
-(def-twitter-restful-method search-places :get "geo/search.json")
-(def-twitter-restful-method similar-places :get "geo/similar_places.json")
-(def-twitter-restful-method create-place :post "geo/place.json")
+(def-twitter-restful-method :get  "geo/id/{:place_id}")
+(def-twitter-restful-method :get  "geo/reverse_geocode")
+(def-twitter-restful-method :get  "geo/search")
+(def-twitter-restful-method :get  "geo/similar_places")
+(def-twitter-restful-method :post "geo/place")
 
 
 ;; Help
-(def-twitter-restful-method help-configuration :get "help/configuration.json")
-(def-twitter-restful-method help-languages :get "help/languages.json")
-(def-twitter-restful-method help-tos :get "help/tos.json")
-(def-twitter-restful-method help-privacy :get "help/privacy.json")
+(def-twitter-restful-method :get "help/configuration")
+(def-twitter-restful-method :get "help/languages")
+(def-twitter-restful-method :get "help/tos")
+(def-twitter-restful-method :get "help/privacy")
 
