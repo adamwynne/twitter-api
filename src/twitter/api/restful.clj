@@ -13,12 +13,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-restful-method
-  [default-action resource-path & rest]
+  [verb resource-path & rest]
   (let [json-path (str resource-path ".json") ; v1.1 is .json only.
         dashed-name (clojure.string/replace resource-path #"[^a-zA-Z]+" "-") ; convert group of symbols to a dash 
         clean-name (clojure.string/replace dashed-name #"-$" "") ; drop trailing dashes
         fn-name (symbol clean-name)]
-    `(def-twitter-method ~fn-name ~default-action ~json-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest)))
+    `(def-twitter-method ~fn-name ~verb ~json-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

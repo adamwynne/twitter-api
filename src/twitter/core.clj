@@ -48,12 +48,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- get-request-args 
-  "takes uri, action and optional args and returns the final uri and http parameters for the subsequent call.
+  "takes uri, verb and optional args and returns the final uri and http parameters for the subsequent call.
    Note that the params are transformed (from lispy -'s to x-header-style _'s) and added to the query. So :params
    could be {:screen-name 'blah'} and it be merged into :query as {:screen_name 'blah'}. The uri has the params
    substituted in (so {:id} in the uri with use the :id in the :params map). Also, the oauth headers are added
    if required."
-  [^Keyword action
+  [^Keyword verb
    ^String uri
    ^PersistentArrayMap arg-map]
 
@@ -64,18 +64,18 @@
         final-uri (subs-uri uri params)
         
         oauth-map (sign-query (:oauth-creds arg-map)
-                              action
+                              verb
                               final-uri
                               :query query)
         
         headers (merge (:headers arg-map)
                        (if oauth-map {:Authorization (oauth-header-string oauth-map)}))
 
-        my-args (cond (= action :get) (hash-map :query query :headers headers :body body)
+        my-args (cond (= verb :get) (hash-map :query query :headers headers :body body)
                       (nil? body) (hash-map :headers (add-form-content-type headers) :body query)
                       :else (hash-map :query query :headers headers :body body))]
 
-    {:action action
+    {:verb verb
      :uri final-uri
      :processed-args (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :api :callbacks)
                             my-args)}))
@@ -83,19 +83,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn http-request 
-  "calls the action on the resource specified in the uri, signing with oauth in the headers
+  "calls the verb on the resource specified in the uri, signing with oauth in the headers
    you can supply args for async.http.client (e.g. :query, :body, :headers etc)."
-  [^Keyword action
+  [^Keyword verb
    ^String uri
    ^PersistentArrayMap arg-map]
 
   (let [client (or (:client arg-map) (default-client))
         callbacks (or (:callbacks arg-map)
                       (throw (Exception. "need to specify a callback argument for http-request")))
-        request-args (get-request-args action uri arg-map)
+        request-args (get-request-args verb uri arg-map)
         
         request (apply prepare-request-with-multi
-                       (:action request-args)
+                       (:verb request-args)
                        (:uri request-args)
                        (apply concat (:processed-args request-args)))]
  ;;   (println "request-args" request-args)
@@ -109,7 +109,7 @@
    As part of the specification, it must have an :api and :callbacks member of the 'rest' list.
    From these it creates a uri, the api context and relative resource path. The default callbacks that are
    supplied, determine how to make the call (in terms of the sync/async or single/streaming)"
-  [fn-name default-action resource-path & rest]
+  [fn-name default-verb resource-path & rest]
   (let [rest-map (apply sorted-map rest)]
 ;;    (println "Creating" fn-name)
     `(defn ~fn-name
@@ -117,9 +117,9 @@
        
        (let [arg-map# (merge ~rest-map args#)
              api-context# (assert-throw (:api arg-map#) "must include an ':api' entry in the params")
-             action# (or (:verb args#) ~default-action)
+             verb# (or (:verb args#) ~default-verb)
              uri# (make-uri api-context# ~resource-path)]
          
-         (http-request action# uri# arg-map#)))))
+         (http-request verb# uri# arg-map#)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

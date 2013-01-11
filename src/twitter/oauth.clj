@@ -16,7 +16,7 @@
 
 (defn sign-query
   "takes oauth credentials and returns a map of the signing parameters"
-  [#^OauthCredentials oauth-creds action uri & {:keys [query]}]
+  [#^OauthCredentials oauth-creds verb uri & {:keys [query]}]
 
   (if oauth-creds
     (into (sorted-map)
@@ -24,7 +24,7 @@
                  (oa/credentials (:consumer oauth-creds)
                                  (:access-token oauth-creds)
                                  (:access-token-secret oauth-creds)
-                                 action
+                                 verb
                                  uri
                                  query)))))
   

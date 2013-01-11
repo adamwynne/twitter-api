@@ -20,7 +20,7 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 Just add the following to your project.clj file in the _dependencies_ section:
 
 ```
-[twitter-api "0.6.13"]
+[twitter-api "0.7.0"]
 ```
 
 ## Usage
@@ -158,17 +158,28 @@ You can use leiningen to test the library using the following snippet
 
 ```
 $ lein test
-Testing twitter.test.api.restful
-2719 [main] INFO com.ning.http.client.providers.netty.NettyAsyncHttpProvider - Number of application's worked threads is 4
-Testing twitter.test.api.search
-Testing twitter.test.api.streaming
+
+Testing twitter.api.test.restful
+
+Testing twitter.api.test.search
+
+Testing twitter.api.test.streaming
+
+Testing twitter.test-utils.core
+
 Testing twitter.test.callbacks
+
 Testing twitter.test.core
+
 Testing twitter.test.creds
+
 Testing twitter.test.request
+
 Testing twitter.test.upload
+
 Testing twitter.test.utils
-Ran 47 tests containing 117 assertions.
+
+Ran 48 tests containing 112 assertions.
 0 failures, 0 errors.
 ```
 

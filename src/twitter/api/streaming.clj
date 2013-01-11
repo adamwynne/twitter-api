@@ -10,9 +10,9 @@
 
 (defmacro def-twitter-streaming-method
   "defines a streaming API method using the above api context"
-  [name action resource-path & rest]
+  [name verb resource-path & rest]
 
-  `(def-twitter-method ~name ~action ~resource-path :api ~*streaming-api* :callbacks (get-default-callbacks :async :streaming) ~@rest))
+  `(def-twitter-method ~name ~verb ~resource-path :api ~*streaming-api* :callbacks (get-default-callbacks :async :streaming) ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -26,9 +26,9 @@
 
 (defmacro def-twitter-user-streaming-method
   "defines a user streaming method using the above context"
-  [name action resource-path & rest]
+  [name verb resource-path & rest]
 
-  `(def-twitter-method ~name ~action ~resource-path :api ~*user-stream-api* :callbacks (get-default-callbacks :async :streaming) ~@rest))
+  `(def-twitter-method ~name ~verb ~resource-path :api ~*user-stream-api* :callbacks (get-default-callbacks :async :streaming) ~@rest))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
