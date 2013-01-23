@@ -40,7 +40,7 @@
 
   (let [dot-pos (.lastIndexOf filename ".")
         result (.substring filename (inc dot-pos))]
-    (if (and (>= dot-pos 0) (> (count result) 0))
+    (if (and (>= dot-pos 0) (pos? (count result)))
       result)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
