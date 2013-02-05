@@ -103,7 +103,7 @@ All of the API calls will return the full HTTP response of the request, includin
 			       		        *user-access-token-secret*))
 
 ; retrieves the user stream, waits 1 minute and then cancels the async call
-(def ^:dynamic *response* (user :oauth-creds my-creds))
+(def ^:dynamic *response* (user-stream :oauth-creds my-creds))
 (Thread/sleep 60000)
 ((:cancel (meta *response*)))
 
