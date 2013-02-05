@@ -66,7 +66,7 @@ All of the API calls will return the full HTTP response of the request, includin
 ; supplying a custom header
 (users-show :oauth-creds my-creds :params {:screen-name "AdamJWynne"} :headers {:x-blah-blah "value"})
 
-; shows the users friends, without using authentication
+; shows the users friends
 (friendships-show :oauth-creds my-creds 
                   :params {:screen-name "AdamJWynne"})
 
