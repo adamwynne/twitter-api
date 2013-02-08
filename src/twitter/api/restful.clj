@@ -53,9 +53,9 @@
 (def-twitter-restful-method :get  "statuses/retweets/{:id}")
 (def-twitter-restful-method :get  "statuses/show/{:id}")
 (def-twitter-restful-method :post "statuses/destroy/{:id}")
-(def-twitter-restful-method :post "statuses/update.json")
+(def-twitter-restful-method :post "statuses/update")
 (def-twitter-restful-method :post "statuses/retweet/{:id}")
-(def-twitter-restful-method :get  "statuses/oembed.json")
+(def-twitter-restful-method :get  "statuses/oembed")
 ; Supply the status and file to the :body as a sequence using the functions 'file-body-part' and 'status-body-part'
 ; i.e. :body [(file-body-part "/pics/mypic.jpg") (status-body-part "hello world")]
 ; for an example, see twitter.test.file-upload
