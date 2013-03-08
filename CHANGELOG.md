@@ -1,5 +1,8 @@
 # twitter-api changelog
 
+## 0.7.3
+* removed some extraneous .json's in uris (thanks Takahiro Hozumi)
+	
 ## 0.7.2
 * upgraded the lein dependency to 2 (and removed the plugins - should be .lein/profiles.clj)
 * upgraded the async library to 0.5.0
