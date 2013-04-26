@@ -1,5 +1,8 @@
 # twitter-api changelog
-
+## 0.7.4
+* removed the dependency to adamwynne/clj-oauth and moved to main clj-oauth
+* removed the user suggestion tests as the endpoint seems down
+	
 ## 0.7.3
 * removed some extraneous .json's in uris (thanks Takahiro Hozumi)
 	
