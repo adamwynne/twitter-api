@@ -6,9 +6,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def ^:dynamic *rest-api* (make-api-context "http" "api.twitter.com" "1.1"))
+(def ^:dynamic *rest-api* (make-api-context "https" "api.twitter.com" "1.1"))
 (def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
-(def ^:dynamic *rest-upload-api* (make-api-context "http" "upload.twitter.com" 1))
+(def ^:dynamic *rest-upload-api* (make-api-context "https" "upload.twitter.com" 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
