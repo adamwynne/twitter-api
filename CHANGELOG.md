@@ -1,4 +1,8 @@
 # twitter-api changelog
+
+## 0.7.5
+* changed all URLs to use https scheme (thanks tjoy)
+
 ## 0.7.4
 * removed the dependency to adamwynne/clj-oauth and moved to main clj-oauth
 * removed the user suggestion tests as the endpoint seems down
