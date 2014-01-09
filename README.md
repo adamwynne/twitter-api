@@ -68,14 +68,14 @@ All of the API calls will return the full HTTP response of the request, includin
 
 ; shows the users friends
 (friendships-show :oauth-creds my-creds 
-                  :params {:screen-name "AdamJWynne"})
+                  :params {:target-screen-name "AdamJWynne"})
 
 ; use a custom callback function that only returns the body of the response
 (friendships-show :oauth-creds my-creds
                   :callbacks (SyncSingleCallback. response-return-body 
                                                   response-throw-error
                                                   exception-rethrow)      
-	      :params {:screen-name "AdamJWynne"})
+	      :params {:target-screen-name "AdamJWynne"})
 
 ; upload a picture tweet with a text status attached, using the default sync-single callback
 (statuses-update-with-media :oauth-creds *creds*
