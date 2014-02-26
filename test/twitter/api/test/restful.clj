@@ -78,7 +78,8 @@
   (is-200 lists-list)
   (is-200 lists-memberships)
   (is-200 lists-subscriptions)
-  
+  (is-200 lists-ownerships)
+
   (with-list list-id (is-200 lists-statuses :params {:list-id list-id})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

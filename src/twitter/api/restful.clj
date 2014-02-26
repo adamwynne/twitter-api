@@ -94,6 +94,7 @@
 (def-twitter-restful-method :get  "lists/show")
 (def-twitter-restful-method :get  "lists/memberships")
 (def-twitter-restful-method :get  "lists/subscriptions")
+(def-twitter-restful-method :get  "lists/ownerships")
 (def-twitter-restful-method :post "lists/create")
 (def-twitter-restful-method :post "lists/update")
 (def-twitter-restful-method :post "lists/destroy")
