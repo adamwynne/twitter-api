@@ -54,10 +54,10 @@ All of the API calls will return the full HTTP response of the request, includin
   (:import
    (twitter.callbacks.protocols SyncSingleCallback)))
 
-(def my-creds (make-oauth-creds "api-key"
-                                "api-secret"
-                                "access-token"
-                                "access-token-secret"))
+(def my-creds (make-oauth-creds api-key
+                                api-secret
+                                access-token
+                                access-token-secret))
 
 ; simply retrieves the user, authenticating with the above credentials
 ; note that anything in the :params map gets the -'s converted to _'s
@@ -99,10 +99,10 @@ All of the API calls will return the full HTTP response of the request, includin
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
-(def my-creds (make-oauth-creds "api-key"
-                                "api-secret"
-                                "access-token"
-                                "access-token-secret"))
+(def my-creds (make-oauth-creds api-key
+                                api-secret
+                                access-token
+                                access-token-secret))
 
 ; retrieves the user stream, waits 1 minute and then cancels the async call
 (def ^:dynamic *response* (user-stream :oauth-creds my-creds))
