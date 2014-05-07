@@ -33,6 +33,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def-twitter-user-streaming-method user-stream :get "user.json")
-(def-twitter-user-streaming-method site-stream :get "site.json")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def ^:dynamic *site-stream-api* (ApiContext. "https" "sitestream.twitter.com" "1.1"))
+
+(defmacro def-twitter-site-streaming-method
+  "defines a site streaming method using the above context"
+  [name verb resource-path & rest]
+
+  `(def-twitter-method ~name ~verb ~resource-path :api ~*site-stream-api* :callbacks (get-default-callbacks :async :streaming) ~@rest))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def-twitter-site-streaming-method site-stream :get "site.json")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
