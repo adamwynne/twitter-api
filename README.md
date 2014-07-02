@@ -77,6 +77,10 @@ All of the API calls will return the full HTTP response of the request, includin
                                                   exception-rethrow)      
 	      :params {:target-screen-name "AdamJWynne"})
 
+; post a text status, using the default sync-single callback
+(statuses-update :oauth-creds *creds*
+                 :params {:status "hello world"})
+
 ; upload a picture tweet with a text status attached, using the default sync-single callback
 (statuses-update-with-media :oauth-creds *creds*
                             :body [(file-body-part "/pics/test.jpg")
