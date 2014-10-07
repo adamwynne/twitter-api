@@ -78,11 +78,11 @@ All of the API calls will return the full HTTP response of the request, includin
 	      :params {:target-screen-name "AdamJWynne"})
 
 ; post a text status, using the default sync-single callback
-(statuses-update :oauth-creds *creds*
+(statuses-update :oauth-creds my-creds
                  :params {:status "hello world"})
 
 ; upload a picture tweet with a text status attached, using the default sync-single callback
-(statuses-update-with-media :oauth-creds *creds*
+(statuses-update-with-media :oauth-creds my-creds
                             :body [(file-body-part "/pics/test.jpg")
                                   (status-body-part "testing")])
 
