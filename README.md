@@ -20,7 +20,7 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 Just add the following to your project.clj file in the _dependencies_ section:
 
 ```
-[twitter-api "0.7.6"]
+[twitter-api "0.7.7"]
 ```
 
 ## Usage
