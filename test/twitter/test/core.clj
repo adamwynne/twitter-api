@@ -15,7 +15,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-oauth-header-string
-  (is (= (oauth-header-string {:a 1 :b 2 :c 3}) "OAuth a=\"1\",c=\"3\",b=\"2\""))
+  (is (= (oauth-header-string {:a 1 :b 2 :c 3}) "OAuth c=\"3\",b=\"2\",a=\"1\""))
   (is (= (oauth-header-string {:a "hi there"}) "OAuth a=\"hi%20there\""))
   (is (= (oauth-header-string {:a "hi there"} :url-encode? nil) "OAuth a=\"hi there\"")))
 
