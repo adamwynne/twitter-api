@@ -77,6 +77,20 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn rate-limit-error?
+  "returns true if the given response contains a rate limit error"
+  [status]
+  (= 429 (:code status)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn format-rate-limit-error
+  [response]
+  (let [reset-time (-> response ac/headers :x-rate-limit-reset)]
+    (format "Twitter responded to request with error 88: Rate limit exceeded. Next reset at %s (UTC epoch seconds)" reset-time)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn get-twitter-error-message
   "interrogates a response for its twitter error message"
   [response]
@@ -89,10 +103,11 @@
         req (:request body)]
     
     (cond
-     (and req code desc) (format "Twitter responded to request '%s' with error %d: %s" req code desc)
-     (and code desc) (format "Twitter responded to request with error %d: %s" code desc)
-     desc (format "Twitter responded to request with error: %s" desc)
-     :default "Twitter responded to request with an unknown error")))
+      (rate-limit-error? status) (format-rate-limit-error response)
+      (and req code desc) (format "Twitter responded to request '%s' with error %d: %s" req code desc)
+      (and code desc) (format "Twitter responded to request with error %d: %s" code desc)
+      desc (format "Twitter responded to request with error: %s" desc)
+      :default "Twitter responded to request with an unknown error")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
