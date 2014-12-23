@@ -50,3 +50,10 @@
                     *user-access-token-secret*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn make-app-only-test-creds
+  "makes an Oauth structure that uses only an app's credentials"
+  []
+
+  (make-oauth-creds *app-consumer-key*
+                    *app-consumer-secret*))

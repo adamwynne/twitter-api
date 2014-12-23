@@ -63,10 +63,12 @@
 
         final-uri (subs-uri uri params)
         
-        oauth-map (sign-query (:oauth-creds arg-map)
-                              verb
-                              final-uri
-                              :query query)
+        oauth-map (if (contains? (:oauth-creds arg-map) :bearer)
+                    (:oauth-creds arg-map) ;; no need to sign for app-only auth
+                    (sign-query (:oauth-creds arg-map)
+                                verb
+                                final-uri
+                                :query query))
         
         headers (merge (:headers arg-map)
                        (if oauth-map {:Authorization (oauth-header-string oauth-map)}))
