@@ -23,11 +23,21 @@
 
   `(is (= (get-in (~fn-name :oauth-creds (make-test-creds) ~@args) [:status :code]) ~code)))
 
+(defmacro is-200-with-app-only
+  "checks to see if the response to a request using application-only
+  authentication is a specific HTTP return code"
+  [fn-name & args]
+
+  `(is (= (get-in (~fn-name :oauth-creds (make-app-only-test-creds) ~@args) [:status :code]) 200)))
+
 (defmacro is-200
   "checks to see if the response is HTTP 200"
   [fn-name & args]
 
-  `(is-http-code 200 ~fn-name ~@args))
+  (if (some #{:app-only} args)
+    (let [args# (remove #{:app-only} args)]
+      `(is-200-with-app-only ~fn-name ~@args#))
+    `(is-http-code 200 ~fn-name ~@args)))
 
 (defn get-user-id
   "gets the id of the supplied screen name"
