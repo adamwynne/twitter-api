@@ -26,7 +26,7 @@
 ;; Accounts
 (def-twitter-restful-method :get  "account/settings")
 (def-twitter-restful-method :get  "account/verify_credentials")
-(def-twitter-restful-method :post "account/settings") 
+(def-twitter-restful-method :post "account/settings")
 (def-twitter-restful-method :post "account/update_delivery_device")
 (def-twitter-restful-method :post "account/update_profile")
 (def-twitter-restful-method :post "account/update_profile_background_image")
@@ -50,6 +50,7 @@
 (def-twitter-restful-method :get "statuses/retweets_of_me")
 
 ;; Statuses
+(def-twitter-restful-method :get  "statuses/lookup")
 (def-twitter-restful-method :get  "statuses/retweets/{:id}")
 (def-twitter-restful-method :get  "statuses/show/{:id}")
 (def-twitter-restful-method :post "statuses/destroy/{:id}")

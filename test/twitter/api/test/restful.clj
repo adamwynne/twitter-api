@@ -34,6 +34,7 @@
 
 (deftest test-statuses
   (let [status-id (get-current-status-id *user-screen-name*)]
+    (is-200 statuses-lookup :params {})
     (is-200 statuses-show-id :params {:id status-id})
     (is-200 statuses-show-id :params {:id status-id} :app-only)
     (is-200 statuses-retweets-id :params {:id status-id})
