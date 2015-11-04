@@ -4,7 +4,7 @@
                  [org.clojure/data.json "0.2.5"]
                  [org.clojure/data.codec "0.1.0"]
                  [http.async.client "0.5.2"]
-                 [clj-oauth "1.5.1"]]
+                 [clj-oauth "1.5.3"]]
   :url "https://github.com/adamwynne/twitter-api"
   :scm {:name "git"
         :url "https://github.com/adamwynne/twitter-api"}
