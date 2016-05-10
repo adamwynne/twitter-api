@@ -155,10 +155,13 @@ $ lein jar
 ## Testing
 
 ###NOTE:
-You must populate the properties file *resources/test.config* before the tests will work. 
+You must populate the properties file *resources/test.config* before the tests will work.
 
-* To get the app consumer keys, simply use the https://dev.twitter.com/apps/<app-id> link and select your app
-* To get the user keys, go to https://dev.twitter.com/apps/<app-id>/my_token
+* To get the app consumer keys go to https://apps.twitter.com/
+* Click on the app that you wish to use
+* Get the user keys by clicking on **Keys and Access Tokens** tab
+* Select: **Consumer Key (API Key)**, **Consumer Secret (API Secret)**, **Access Token** & **Access Token Secret**
+
 
 You can use leiningen to test the library using the following snippet
 
