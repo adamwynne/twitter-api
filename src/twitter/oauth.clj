@@ -46,7 +46,7 @@
     (let [val-transform (if url-encode? oas/url-encode identity)
           s (reduce (fn [s [k v]] (format "%s%s=\"%s\"," s (name k) (val-transform (str v))))
                     "OAuth "
-                    signing-map)]
+                    (apply hash-map (flatten (reverse signing-map))))]
       (.substring s 0 (dec (count s))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

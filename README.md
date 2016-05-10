@@ -67,18 +67,18 @@ All of the API calls will return the full HTTP response of the request, includin
 (users-show :oauth-creds my-creds :params {:screen-name "AdamJWynne"} :headers {:x-blah-blah "value"})
 
 ; shows the users friends
-(friendships-show :oauth-creds my-creds 
+(friendships-show :oauth-creds my-creds
                   :params {:target-screen-name "AdamJWynne"})
 
 ; use a custom callback function that only returns the body of the response
 (friendships-show :oauth-creds my-creds
-                  :callbacks (SyncSingleCallback. response-return-body 
+                  :callbacks (SyncSingleCallback. response-return-body
                                                   response-throw-error
-                                                  exception-rethrow)      
+                                                  exception-rethrow)
 	      :params {:target-screen-name "AdamJWynne"})
 
 ; post a text status, using the default sync-single callback
-(statuses-update :oauth-creds *creds*
+(statuses-update :oauth-creds my-creds
                  :params {:status "hello world"})
 
 ; upload a picture tweet with a text status attached, using the default sync-single callback
@@ -155,10 +155,13 @@ $ lein jar
 ## Testing
 
 ###NOTE:
-You must populate the properties file *resources/test.config* before the tests will work. 
+You must populate the properties file *resources/test.config* before the tests will work.
 
-* To get the app consumer keys, simply use the https://dev.twitter.com/apps/<app-id> link and select your app
-* To get the user keys, go to https://dev.twitter.com/apps/<app-id>/my_token
+* To get the app consumer keys go to https://apps.twitter.com/
+* Click on the app that you wish to use
+* Get the user keys by clicking on **Keys and Access Tokens** tab
+* Select: **Consumer Key (API Key)**, **Consumer Secret (API Secret)**, **Access Token** & **Access Token Secret**
+
 
 You can use leiningen to test the library using the following snippet
 
