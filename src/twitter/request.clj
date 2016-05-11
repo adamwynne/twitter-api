@@ -8,9 +8,7 @@
    [http.async.client :as ac]
    [clojure.string :as string])
   (:import (com.ning.http.client Cookie
-                                 FluentCaseInsensitiveStringsMap
 				 PerRequestConfig
-                                 Request
                                  RequestBuilder)
            (com.ning.http.multipart StringPart
                                     FilePart)
