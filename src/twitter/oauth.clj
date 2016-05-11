@@ -2,11 +2,13 @@
   (:require
    [http.async.client.request :as req]
    [http.async.client :refer [create-client]]
-   [twitter.callbacks :refer [callbacks-sync-single-default]]
-   [twitter.request :refer [execute-request-callbacks]]
    [clojure.data.codec.base64 :as b64]
-   [oauth.client :as oa]
-   [oauth.signature :as oas]))
+   [twitter
+    [callbacks :refer [callbacks-sync-single-default]]
+    [request :refer [execute-request-callbacks]]]
+   [oauth
+    [client :as oa]
+    [signature :as oas]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
