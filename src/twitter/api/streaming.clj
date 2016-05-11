@@ -1,8 +1,9 @@
 (ns twitter.api.streaming
-  (:use
-   [twitter core callbacks])
-  (:import
-   (twitter.api ApiContext)))
+  (:require
+   [twitter
+    [core :refer :all]
+    [callbacks :refer :all]])
+  (:import twitter.api.ApiContext))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
