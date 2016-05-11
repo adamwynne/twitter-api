@@ -1,8 +1,8 @@
 (ns twitter.api.search
-  (:use
-   [twitter core callbacks])
-  (:import
-   (twitter.api ApiContext)))
+  (:require [twitter
+             [callbacks :refer :all]
+             [core :refer :all]])
+  (:import twitter.api.ApiContext))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
