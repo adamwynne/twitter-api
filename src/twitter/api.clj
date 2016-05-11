@@ -1,6 +1,4 @@
-(ns twitter.api
-  (:use
-   [clojure.test]))
+(ns twitter.api)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -15,7 +13,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn make-uri 
+(defn make-uri
    "makes a uri from a supplied protocol, site, version and resource-path"
    [^ApiContext context
     ^String resource-path]
