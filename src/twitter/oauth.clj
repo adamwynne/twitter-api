@@ -1,6 +1,4 @@
 (ns twitter.oauth
-  (:use
-   [clojure.test])
   (:require
    [http.async.client.request :as req]
    [http.async.client :refer [create-client]]
@@ -32,10 +30,10 @@
                                  verb
                                  uri
                                  query)))))
-  
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn oauth-header-string 
+(defn oauth-header-string
   "Creates the string for the oauth header's 'Authorization' value,
   url encoding each value. If the signing-map is an application-only
   token, returns the 'Bearer' value."
@@ -96,5 +94,5 @@
                                     "https://twitter.com/oauth/access_token"
                                     "https://twitter.com/oauth/authorize"
                                     :hmac-sha1)]
-     
+
      (OauthCredentials. consumer user-token user-token-secret))))
