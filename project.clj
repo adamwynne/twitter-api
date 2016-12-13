@@ -6,9 +6,8 @@
                  [http.async.client "0.5.2"]
                  [clj-oauth "1.5.5"]]
   :url "https://github.com/adamwynne/twitter-api"
-  :scm {:name "git"
-        :url "https://github.com/adamwynne/twitter-api"}
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/license/LICENSE-2.0.html"}
-  :deploy-repositories [["clojars" {:sign-releases false}]]
+  :deploy-repositories [["releases" {:url "https://clojars.org/repo"
+                                     :sign-releases false}]]
   :min-lein-version "2.0.0")
