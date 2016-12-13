@@ -46,13 +46,13 @@ All of the API calls will return the full HTTP response of the request, includin
 
 ```clojure
 (ns mynamespace
-  (:use
-   [twitter.oauth]
-   [twitter.callbacks]
-   [twitter.callbacks.handlers]
-   [twitter.api.restful])
-  (:import
-   (twitter.callbacks.protocols SyncSingleCallback)))
+  (:require
+   [twitter
+    [oauth :refer :all]
+    [callbacks :refer :all]]
+   [twitter.callbacks.handlers :refer :all]
+   [twitter.api.restful :refer :all])
+  (:import [twitter.callbacks.protocols SyncSingleCallback]))
 
 (def my-creds (make-oauth-creds *app-consumer-key*
      			       		    *app-consumer-secret*
@@ -92,16 +92,15 @@ All of the API calls will return the full HTTP response of the request, includin
 
 ```clojure
 (ns mynamespace
-  (:use
-   [twitter.oauth]
-   [twitter.callbacks]
-   [twitter.callbacks.handlers]
-   [twitter.api.streaming])
   (:require
+   [twitter
+    [oauth :refer :all]
+    [callbacks :refer :all]]
+   [twitter.callbacks.handlers :refer :all]
+   [twitter.api.streaming :refer :all]
    [clojure.data.json :as json]
    [http.async.client :as ac])
-  (:import
-   (twitter.callbacks.protocols AsyncStreamingCallback)))
+  (:import [twitter.callbacks.protocols AsyncStreamingCallback]))
 
 (def my-creds (make-oauth-creds *app-consumer-key*
 			       		        *app-consumer-secret*
