@@ -1,14 +1,11 @@
 (ns twitter.request
-  (:require
-   [twitter.utils :refer :all]
-   [twitter.callbacks
-    [handlers :refer :all]
-    [protocols :refer :all]]
-   [http.async.client :as ac]
-   [http.async.client
-    [util :as requ]
-    [request :as req]]
-   [clojure.string :as string])
+  (:require [twitter.utils :refer :all]
+            [twitter.callbacks.handlers :refer :all]
+            [twitter.callbacks.protocols :refer :all]
+            [http.async.client :as ac]
+            [http.async.client.util :as requ]
+            [http.async.client.request :as req]
+            [clojure.string :as string])
   (:import [com.ning.http.client Cookie PerRequestConfig RequestBuilder]
            [com.ning.http.multipart StringPart FilePart]
            [java.io File InputStream]))

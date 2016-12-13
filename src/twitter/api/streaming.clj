@@ -1,8 +1,6 @@
 (ns twitter.api.streaming
-  (:require
-   [twitter
-    [core :refer :all]
-    [callbacks :refer :all]])
+  (:require [twitter.callbacks :refer :all]
+            [twitter.core :refer :all])
   (:import twitter.api.ApiContext))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -18,7 +16,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def-twitter-streaming-method statuses-filter :post "statuses/filter.json")
-(def-twitter-streaming-method statuses-firehose	:get "statuses/firehose.json")
+(def-twitter-streaming-method statuses-firehose :get "statuses/firehose.json")
 (def-twitter-streaming-method statuses-sample :get "statuses/sample.json")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

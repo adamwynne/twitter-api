@@ -1,11 +1,10 @@
 (ns twitter.core
   (:require [clojure.string :as string]
             [http.async.client :as ac]
-            [twitter
-             [api :refer :all]
-             [oauth :refer :all]
-             [request :refer :all]
-             [utils :refer :all]])
+            [twitter.api :refer :all]
+            [twitter.oauth :refer :all]
+            [twitter.request :refer :all]
+            [twitter.utils :refer :all])
   (:import [clojure.lang Keyword PersistentArrayMap]))
 
 
