@@ -1,11 +1,8 @@
 (ns twitter.callbacks
-  (:use
-   [twitter.callbacks handlers protocols])
-  (:require
-   [http.async.client :as ac])
-  (:import
-   (twitter.callbacks.protocols SyncSingleCallback SyncStreamingCallback
-                                AsyncSingleCallback AsyncStreamingCallback)))
+  (:require [twitter.callbacks.handlers :refer :all]
+            [twitter.callbacks.protocols :refer :all])
+  (:import [twitter.callbacks.protocols SyncSingleCallback SyncStreamingCallback
+                                        AsyncSingleCallback AsyncStreamingCallback]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

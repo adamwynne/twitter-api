@@ -1,14 +1,12 @@
 (ns twitter.core
-  (:use
-   [clojure.test]
-   [twitter callbacks oauth api utils request])
-  (:require
-   [clojure.data.json :as json]
-   [oauth.client :as oa]
-   [http.async.client :as ac]
-   [clojure.string :as string])
-  (:import
-   (clojure.lang Keyword PersistentArrayMap)))
+  (:require [clojure.string :as string]
+            [http.async.client :as ac]
+            [twitter.api :refer :all]
+            [twitter.oauth :refer :all]
+            [twitter.request :refer :all]
+            [twitter.utils :refer :all])
+  (:import [clojure.lang Keyword PersistentArrayMap]))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

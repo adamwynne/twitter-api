@@ -1,9 +1,6 @@
 (ns twitter.callbacks.protocols
-  (:use
-   [twitter.callbacks.handlers])
-  (:require
-   [http.async.client :as ac]
-   [http.async.client.request :as req]))
+  (:require [twitter.callbacks.handlers :refer :all]
+            [http.async.client.request :as req]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

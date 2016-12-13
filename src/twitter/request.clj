@@ -1,20 +1,14 @@
 (ns twitter.request
-  (:use
-   [twitter callbacks utils]
-   [twitter.callbacks protocols handlers])
-  (:require
-   [http.async.client.util :as requ]
-   [http.async.client.request :as req]
-   [http.async.client :as ac]
-   [clojure.string :as string])
-  (:import (com.ning.http.client Cookie
-                                 FluentCaseInsensitiveStringsMap
-				 PerRequestConfig
-                                 Request
-                                 RequestBuilder)
-           (com.ning.http.multipart StringPart
-                                    FilePart)
-           (java.io File InputStream)))
+  (:require [twitter.utils :refer :all]
+            [twitter.callbacks.handlers :refer :all]
+            [twitter.callbacks.protocols :refer :all]
+            [http.async.client :as ac]
+            [http.async.client.util :as requ]
+            [http.async.client.request :as req]
+            [clojure.string :as string])
+  (:import [com.ning.http.client Cookie PerRequestConfig RequestBuilder]
+           [com.ning.http.multipart StringPart FilePart]
+           [java.io File InputStream]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
