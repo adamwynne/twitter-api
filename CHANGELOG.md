@@ -1,5 +1,14 @@
 # twitter-api changelog
 
+## 0.7.9
+* Add `statuses-lookup` restful method (thanks Ortuna)
+* Fix `user-stream-api` version (thanks dotemacs)
+* Restyle several instances of `(:use ...)` as `(:require ...)` (thanks dotemacs)
+* Update dependencies:
+  - `org.clojure/clojure "1.6.0"` -> `"1.8.0"`
+  - `org.clojure/data.json "0.2.5"` -> `"0.2.6"`
+  - `clj-oauth "1.5.1"` -> `"1.5.5"`
+
 ## 0.7.8
 * Format rate-limit errors with the reset time (thanks holguinj)
 * Implement app-only authentication (thanks holguinj)
