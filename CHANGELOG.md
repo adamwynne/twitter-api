@@ -1,5 +1,23 @@
 # twitter-api changelog
 
+## 0.7.8
+* Format rate-limit errors with the reset time (thanks holguinj)
+* Implement app-only authentication (thanks holguinj)
+  - Add `org.clojure/data.codec` dependency
+
+## 0.7.7
+* Add `site-stream` streaming method (thanks yogsototh)
+* Add `statuses-update` example to README (thanks morganastra)
+* Update dependencies:
+  - `org.clojure/clojure "1.4.0"` -> `"1.6.0"`
+  - `org.clojure/data.json "0.2.1"` -> `"0.2.5"`
+  - `clj-oauth "1.4.0"` -> `"1.5.1"`
+
+## 0.7.6
+* Fix `friendships-show` examples in README (thanks paulbowler)
+* Update `http.async.client` dependency to fix problem with uploading (thanks minleychris)
+* Add `lists/ownerships` restful method (thanks ryane)
+
 ## 0.7.5
 * changed all URLs to use https scheme (thanks tjoy)
 
