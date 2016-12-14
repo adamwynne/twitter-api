@@ -1,8 +1,16 @@
 # twitter-api
 
-This is an up-to-date twitter API wrapper that is based on the clojure http.async.client library. It offers the full taxonomy of twitter API's (streaming, search and restful) and has been tested to be working. The test coverage is reasonably complete, but I suppose more could be added.
+This is a Clojure library for accessing the Twitter API using [`http.async.client`](https://github.com/cch1/http.async.client).
+
+It endeavors to implement all Twitter APIs:
+* [Streaming](https://dev.twitter.com/streaming/public)
+* [Search](https://dev.twitter.com/rest/public/search)
+* [REST](https://dev.twitter.com/rest/reference)
+
+It is tested by interacting with the live Twitter API.
 
 ## Why did I make this library?
+
 * I felt the current offerings were a bit out of date
 * I wanted the efficiency of the async comms libraries
 * I needed some stuff from the headers returned by twitter (i.e. the rate-limiting stuff and etag)
@@ -10,35 +18,33 @@ This is an up-to-date twitter API wrapper that is based on the clojure http.asyn
 
 ## Giants upon whose shoulders I have stood
 
-* [http.async.client](https://github.com/neotyk/http.async.client) by Hubert Iwaniuk
-* [clj-oauth](https://github.com/mattrepl/clj-oauth) by Matt Revelle
+* [`http.async.client`](https://github.com/cch1/http.async.client) by Hubert Iwaniuk
+* [`clj-oauth`](https://github.com/mattrepl/clj-oauth) by Matt Revelle
 
-##Leiningen
+## Leiningen
 
-###NOTE: this library is fully tested under Clojure 1.6
+Add the following to your `project.clj`'s `:dependencies`:
 
-Just add the following to your project.clj file in the _dependencies_ section:
+    [twitter-api "0.7.9"]
 
-```
-[twitter-api "0.7.9"]
-```
 
 ## Usage
 
-All of the functions follow Twitter's naming conventions; we convert a resource's path into the function name. For example:
+All of the functions follow Twitter's naming conventions; we convert a resource's path into the function name.
+For example:
 
 * `https://api.twitter.com/1.1/account/settings` is available as `account-settings`
 * `https://api.twitter.com/1.1/statuses/update_with_media` is available as `statuses-update-with-media`
 
-Parameters are uniform across the functions. All calls can accept:
+Parameters are uniform across the functions. All calls accept:
 
 * `:oauth-creds` is the result of the `make-oauth-creds` function.
-* `:params` is a map of parameters to pass, eg, `list_id=123` would be `{:list-id 123}`
+* `:params` is a map of parameters to pass, e.g., `?list_id=123` would be `{:list-id 123}`
 * `:headers` adds or overrides any of the request headers sent to Twitter.
-* `:verb` overrides the HTTP verb used to make the request, for resources that support it (eg, `account-settings`)
+* `:verb` overrides the HTTP verb used to make the request, for resources that support it (e.g., `account-settings`)
 * `:callbacks` attaches a custom callback to the request.
 
-All of the API calls will return the full HTTP response of the request, including headers.
+All of the API calls return the full HTTP response, including headers, so in most cases you will want to get the response's `:body` value.
 
 ## Examples
 
@@ -46,18 +52,16 @@ All of the API calls will return the full HTTP response of the request, includin
 
 ```clojure
 (ns mynamespace
-  (:use
-   [twitter.oauth]
-   [twitter.callbacks]
-   [twitter.callbacks.handlers]
-   [twitter.api.restful])
-  (:import
-   (twitter.callbacks.protocols SyncSingleCallback)))
+  (:use [twitter.oauth]
+        [twitter.callbacks]
+        [twitter.callbacks.handlers]
+        [twitter.api.restful])
+  (:import [twitter.callbacks.protocols SyncSingleCallback]))
 
 (def my-creds (make-oauth-creds *app-consumer-key*
-     			       		    *app-consumer-secret*
-			       		        *user-access-token*
-			       		        *user-access-token-secret*))
+                                *app-consumer-secret*
+                                *user-access-token*
+                                *user-access-token-secret*))
 
 ; simply retrieves the user, authenticating with the above credentials
 ; note that anything in the :params map gets the -'s converted to _'s
@@ -75,38 +79,34 @@ All of the API calls will return the full HTTP response of the request, includin
                   :callbacks (SyncSingleCallback. response-return-body
                                                   response-throw-error
                                                   exception-rethrow)
-	      :params {:target-screen-name "AdamJWynne"})
+                  :params {:target-screen-name "AdamJWynne"})
 
 ; post a text status, using the default sync-single callback
 (statuses-update :oauth-creds my-creds
                  :params {:status "hello world"})
 
 ; upload a picture tweet with a text status attached, using the default sync-single callback
-(statuses-update-with-media :oauth-creds *creds*
+(statuses-update-with-media :oauth-creds my-creds
                             :body [(file-body-part "/pics/test.jpg")
-                                  (status-body-part "testing")])
-
+                                   (status-body-part "testing")])
 ```
 
 ### Streaming calls
 
 ```clojure
 (ns mynamespace
-  (:use
-   [twitter.oauth]
-   [twitter.callbacks]
-   [twitter.callbacks.handlers]
-   [twitter.api.streaming])
-  (:require
-   [clojure.data.json :as json]
-   [http.async.client :as ac])
-  (:import
-   (twitter.callbacks.protocols AsyncStreamingCallback)))
+  (:use [twitter.oauth]
+        [twitter.callbacks]
+        [twitter.callbacks.handlers]
+        [twitter.api.streaming])
+  (:require [clojure.data.json :as json]
+            [http.async.client :as ac])
+  (:import [twitter.callbacks.protocols AsyncStreamingCallback]))
 
 (def my-creds (make-oauth-creds *app-consumer-key*
-			       		        *app-consumer-secret*
-			       		        *user-access-token*
-			       		        *user-access-token-secret*))
+                                *app-consumer-secret*
+                                *user-access-token*
+                                *user-access-token-secret*))
 
 ; retrieves the user stream, waits 1 minute and then cancels the async call
 (def ^:dynamic *response* (user-stream :oauth-creds my-creds))
@@ -114,31 +114,33 @@ All of the API calls will return the full HTTP response of the request, includin
 ((:cancel (meta *response*)))
 
 ; supply a callback that only prints the text of the status
-(def ^:dynamic 
-     *custom-streaming-callback* 
-     (AsyncStreamingCallback. (comp println #(:text %) json/read-json #(str %2)) 
-     		 	      (comp println response-return-everything)
-			      exception-print))
+(def ^:dynamic
+     *custom-streaming-callback*
+     (AsyncStreamingCallback. (comp println #(:text %) json/read-json #(str %2))
+                              (comp println response-return-everything)
+                              exception-print))
 
 (statuses-filter :params {:track "Borat"}
-		 :oauth-creds my-creds
-		 :callbacks *custom-streaming-callback*)
-
+                 :oauth-creds my-creds
+                 :callbacks *custom-streaming-callback*)
 ```
 
 ## Notes
 
-Unlike other API's, the parameters for each call are not hard-coded into their Clojure wrappers. I just figured that you could look them up on the dev.twitter.com and supply them in the :params map.
+Unlike other APIs, the parameters for each call are not hard-coded into their Clojure wrappers.
+I just figured that you could look them up on the [dev.twitter.com/docs](https://dev.twitter.com/docs) and supply them in the `:params` map.
 
 ###Some points about making the calls:
 
-* You can authenticate or not, by including or omitting the _:oauth-creds_ keyword and value. The value should be a _twitter.oauth.OauthCredentials_ structure (usually the result of the _twitter.oauth/make-oauth-creds_ function)
-* The callbacks decide how the call will be carried out - be it a single or streaming call, or an async or sync call. See the twitter.callbacks.protocols to see how it works
-* You can declare new methods that use different callbacks by either supplying them to the def-twitter-method macro, or inline at run time (via the _:callbacks_ key/vaue), or both!
+* You can authenticate or not, by including or omitting the `:oauth-creds` keyword and value.
+  The value should be a `twitter.oauth.OauthCredentials` structure (usually the result of the `twitter.oauth/make-oauth-creds` function)
+* The callbacks decide how the call will be carried out - be it a single or streaming call, or an async or sync call.
+  Read [`twitter.callbacks.protocols`](src/twitter/callbacks/protocols.clj) to see how it works
+* You can declare new methods that use different callbacks by either supplying them to the `def-twitter-method` macro, or inline at run time (via the `:callbacks` key/value), or both!
 
 ## Building
 
-Simply use leiningen to build the library into a jar with:
+Use leiningen to build the library into a jar with:
 
 ```
 $ git clone git://github.com/adamwynne/twitter-api.git
@@ -152,6 +154,8 @@ $ cd twitter-api/
 $ lein jar
 ```
 
+Which produces a jar file at `target/twitter-api-*.jar`.
+
 ## Testing
 
 ###NOTE:
@@ -161,7 +165,6 @@ You must populate the properties file *resources/test.config* before the tests w
 * Click on the app that you wish to use
 * Get the user keys by clicking on **Keys and Access Tokens** tab
 * Select: **Consumer Key (API Key)**, **Consumer Secret (API Secret)**, **Access Token** & **Access Token Secret**
-
 
 You can use leiningen to test the library using the following snippet
 
@@ -198,7 +201,7 @@ Please note that the testing will take some time (about a minute or so) as its a
 
 This library made open-source by [StreamScience](http://streamscience.co)
 
-Follow [@AdamJWynne](http://twitter.com/#!/adamjwynne) and [@StreamScience](http://twitter.com/#!/streamscience) to save kittens and make rainbows.
+Follow [@AdamJWynne](https://twitter.com/adamjwynne) and [@StreamScience](https://twitter.com/streamscience) to save kittens and make rainbows.
 
 Copyright (C) 2011 StreamScience
 
