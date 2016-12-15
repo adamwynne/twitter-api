@@ -1,10 +1,8 @@
 pom.xml
-*jar
-aw.config
-empty.config
-.lein-failures
 /lib/
 /classes/
 /target/
+*.jar
 .lein-deps-sum
+.lein-failures
 .lein-plugins

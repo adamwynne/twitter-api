@@ -6,41 +6,24 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn load-config-file
-  "this loads a config file from the classpath"
-  [file-name]
-  (let [file-reader (.. (Thread/currentThread)
-                        (getContextClassLoader)
-                        (getResourceAsStream file-name))
-        props (Properties.)]
-    (.load props file-reader)
-    (into {} props)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def ^:dynamic *config* (load-config-file "test.config"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn assert-get
-  "get a value from the config, otherwise throw an exception detailing the problem"
+  "get a value from the environment, otherwise throw an exception detailing the problem"
   [key-name]
-  
-  (or (get *config* key-name) 
-      (throw (Exception. (format "please define %s in the resources/test.config file" key-name)))))
+
+  (or (System/getenv key-name)
+      (throw (Exception. (format "please define %s in the test environment" key-name)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def ^:dynamic *app-consumer-key* (assert-get "app.consumer.key"))
- 
-(def ^:dynamic *app-consumer-secret* (assert-get "app.consumer.secret"))
-(def ^:dynamic *user-screen-name* (assert-get "user.screen.name"))
-(def ^:dynamic *user-access-token* (assert-get "user.access.token"))
-(def ^:dynamic *user-access-token-secret* (assert-get "user.access.token.secret"))
+(def ^:dynamic *app-consumer-key* (assert-get "CONSUMER_KEY"))
+(def ^:dynamic *app-consumer-secret* (assert-get "CONSUMER_SECRET"))
+(def ^:dynamic *user-screen-name* (assert-get "SCREEN_NAME"))
+(def ^:dynamic *user-access-token* (assert-get "ACCESS_TOKEN"))
+(def ^:dynamic *user-access-token-secret* (assert-get "ACCESS_TOKEN_SECRET"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn make-test-creds 
+(defn make-test-creds
   "makes an Oauth structure that uses an app's credentials and a users's credentials"
   []
 

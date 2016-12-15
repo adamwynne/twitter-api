@@ -158,44 +158,22 @@ Which produces a jar file at `target/twitter-api-*.jar`.
 
 ## Testing
 
-###NOTE:
-You must populate the properties file *resources/test.config* before the tests will work.
+The tests require that credentials be provided via environment variables with the following names:
 
-* To get the app consumer keys go to https://apps.twitter.com/
-* Click on the app that you wish to use
-* Get the user keys by clicking on **Keys and Access Tokens** tab
-* Select: **Consumer Key (API Key)**, **Consumer Secret (API Secret)**, **Access Token** & **Access Token Secret**
-
-You can use leiningen to test the library using the following snippet
-
-```
-$ lein test
-
-Testing twitter.api.test.restful
-
-Testing twitter.api.test.search
-
-Testing twitter.api.test.streaming
-
-Testing twitter.test-utils.core
-
-Testing twitter.test.callbacks
-
-Testing twitter.test.core
-
-Testing twitter.test.creds
-
-Testing twitter.test.request
-
-Testing twitter.test.upload
-
-Testing twitter.test.utils
-
-Ran 48 tests containing 112 assertions.
-0 failures, 0 errors.
+```sh
+export CONSUMER_KEY=l4VAFAKEFAKEFAKEpy7R7
+export CONSUMER_SECRET=dVnTimJtFAKEFAKEFAKEFAKEFAKEFAKEBVYnO91BR1G
+export SCREEN_NAME=twitterapibot
+export ACCESS_TOKEN=195648015-OIHb87zuFAKEFAKEFAKEFAKEFAKEFAKEb5aLUMYo
+export ACCESS_TOKEN_SECRET=jsVg1HFAKEFAKEFAKEFAKEFAKEFAKE4yfOLC5cXA9fcXr
 ```
 
-Please note that the testing will take some time (about a minute or so) as its actually doing the calls to the twitter API's
+Then simply run `lein test`, which takes about a minute since many of the tests involve calling the Twitter API and waiting for an appropriate response.
+
+If all tests completed successfully, the test output will end with a message like:
+
+    Ran 47 tests containing 123 assertions.
+    0 failures, 0 errors.
 
 ## License
 
