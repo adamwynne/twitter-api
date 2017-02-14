@@ -13,7 +13,6 @@
         fn-name (-> resource-path clean-resource-path symbol)]
     `(def-twitter-method ~fn-name ~verb ~json-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest)))
 
-
 ;; Accounts
 (def-twitter-restful-method :get  "account/settings")
 (def-twitter-restful-method :get  "account/verify_credentials")
@@ -72,7 +71,6 @@
 (def-twitter-restful-method :get "trends/place")
 (def-twitter-restful-method :get "trends/available")
 (def-twitter-restful-method :get "trends/closest")
-
 
 ;; Oauth
 (def-twitter-restful-method :get  "oauth/authenticate" :api *oauth-api*)
@@ -148,10 +146,8 @@
 (def-twitter-restful-method :get  "geo/similar_places")
 (def-twitter-restful-method :post "geo/place")
 
-
 ;; Help
 (def-twitter-restful-method :get "help/configuration")
 (def-twitter-restful-method :get "help/languages")
 (def-twitter-restful-method :get "help/tos")
 (def-twitter-restful-method :get "help/privacy")
-

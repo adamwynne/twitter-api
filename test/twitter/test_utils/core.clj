@@ -1,9 +1,8 @@
 (ns twitter.test-utils.core
-  (:use
-   [clojure.test]
-   [twitter.utils]
-   [twitter.test.creds]
-   [twitter.api.restful]))
+  (:use [clojure.test]
+        [twitter.utils]
+        [twitter.test.creds]
+        [twitter.api.restful]))
 
 (defmacro is-async-200
   "checks to see if the response is HTTP return code 200, and then cancels it"
@@ -55,7 +54,7 @@
 (defn poll-until-no-error
   "repeatedly tries the poll instruction, for a maximum time, or until the error disappears"
   [poll-fn & {:keys [max-timeout-ms wait-time-ms]
-              :or {max-timeout-ms 60000 wait-time-ms 10000}} ]
+              :or {max-timeout-ms 60000 wait-time-ms 10000}}]
 
   (loop [curr-time-ms 0]
     (if (< curr-time-ms max-timeout-ms)

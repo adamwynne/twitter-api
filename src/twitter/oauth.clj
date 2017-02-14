@@ -7,15 +7,13 @@
             [oauth.client :as oa]
             [oauth.signature :as oas]))
 
- (defrecord OauthCredentials
-    [consumer
-     #^String access-token
-     #^String access-token-secret])
+(defrecord OauthCredentials [consumer
+                             #^String access-token
+                             #^String access-token-secret])
 
 (defn sign-query
   "takes oauth credentials and returns a map of the signing parameters"
   [#^OauthCredentials oauth-creds verb uri & {:keys [query]}]
-
   (if oauth-creds
     (into (sorted-map)
           (merge {:realm "Twitter API"}
@@ -31,7 +29,6 @@
   url encoding each value. If the signing-map is an application-only
   token, returns the 'Bearer' value."
   [signing-map & {:keys [url-encode?] :or {url-encode? true}}]
-
   (if-let [app-only-token (:bearer signing-map)]
     (str "Bearer " app-only-token)
     (let [val-transform (if url-encode? oas/url-encode identity)
@@ -47,8 +44,8 @@
   [consumer-key consumer-secret]
   (let [concat-keys (str (oas/url-encode consumer-key) ":" (oas/url-encode consumer-secret))]
     (-> (.getBytes concat-keys)
-      b64/encode
-      (String. "UTF-8"))))
+        b64/encode
+        (String. "UTF-8"))))
 
 (defn request-app-only-token
   [consumer-key consumer-secret]
@@ -70,18 +67,13 @@
   application-only authentication token. If a user-key and
   user-token-secret are also supplied, then it will return a fully
   authenticated token."
-
   ([app-key app-secret]
-
    (request-app-only-token app-key app-secret))
-
   ([app-key app-secret user-token user-token-secret]
-
    (let [consumer (oa/make-consumer app-key
                                     app-secret
                                     "https://twitter.com/oauth/request_token"
                                     "https://twitter.com/oauth/access_token"
                                     "https://twitter.com/oauth/authorize"
                                     :hmac-sha1)]
-
      (OauthCredentials. consumer user-token user-token-secret))))

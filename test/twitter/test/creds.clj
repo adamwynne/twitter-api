@@ -1,8 +1,6 @@
 (ns twitter.test.creds
-  (:use
-   [twitter.oauth])
-  (:import
-   (java.util Properties)))
+  (:use [twitter.oauth])
+  (:import [java.util Properties]))
 
 (defn assert-get
   "get a value from the environment, otherwise throw an exception detailing the problem"

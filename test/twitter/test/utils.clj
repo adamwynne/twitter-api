@@ -1,7 +1,6 @@
 (ns twitter.test.utils
-  (:use
-   [clojure.test]
-   [twitter.utils]))
+  (:use [clojure.test]
+        [twitter.utils]))
 
 (deftest test-transform-map
   (is (= (transform-map {:a 0 :b 1 :c 2 :d 3} :key-trans name) {"a" 0, "b" 1, "c" 2, "d" 3}))

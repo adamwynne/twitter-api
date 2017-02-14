@@ -1,12 +1,10 @@
 (ns twitter.api.test.restful
-  (:use
-   [clojure.test]
-   [twitter.test-utils.core]
-   [twitter.test creds utils]
-   [twitter.callbacks]
-   [twitter.api.restful])
-  (:import
-   (java.io File)))
+  (:use [clojure.test]
+        [twitter.test-utils.core]
+        [twitter.test creds utils]
+        [twitter.callbacks]
+        [twitter.api.restful])
+  (:import [java.io File]))
 
 (deftest test-account
   (is-200 account-verify-credentials)
@@ -61,7 +59,6 @@
 (defmacro with-list
   "create a list and then removes it"
   [list-id-name & body]
-  
   `(with-setup-poll-teardown
      ~list-id-name
      (get-in (lists-create :oauth-creds (make-test-creds) :params {:name "mytestlistblumblum"})
@@ -75,7 +72,6 @@
   (is-200 lists-memberships)
   (is-200 lists-subscriptions)
   (is-200 lists-ownerships)
-
   (with-list list-id (is-200 lists-statuses :params {:list-id list-id})))
 
 (deftest test-list-members
@@ -95,7 +91,7 @@
 (deftest test-friendship
   (is-200 friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"})
   (is-200 friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"} :app-only)
-  (is-200 friendships-lookup :params { :screen-name "peat,AdamJWynne" } )
+  (is-200 friendships-lookup :params {:screen-name "peat,AdamJWynne"})
   (is-200 friendships-incoming)
   (is-200 friendships-outgoing))
 

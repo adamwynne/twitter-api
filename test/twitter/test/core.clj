@@ -1,15 +1,13 @@
 (ns twitter.test.core
-  (:use
-   [clojure.test]
-   [twitter.test.creds]
-   [twitter oauth api utils core callbacks])
-  (:import
-   (twitter.api ApiContext)))
+  (:use [clojure.test]
+        [twitter.test.creds]
+        [twitter oauth api utils core callbacks])
+  (:import [twitter.api ApiContext]))
 
 (deftest test-sign-query
   (let [result (sign-query (make-test-creds) :get "http://www.cnn.com" :query {:test-param "true"})]
     (is (:oauth_signature result))))
-  
+
 (deftest test-oauth-header-string
   (is (= (oauth-header-string {:a 1 :b 2 :c 3}) "OAuth c=\"3\",b=\"2\",a=\"1\""))
   (is (= (oauth-header-string {:a "hi there"}) "OAuth a=\"hi%20there\""))

@@ -1,10 +1,9 @@
 (ns twitter.api
   (:require [clojure.string :as string]))
 
-(defrecord ApiContext
-    [^String protocol
-     ^String host
-     ^Integer version])
+(defrecord ApiContext [^String protocol
+                       ^String host
+                       ^Integer version])
 
 (defn make-api-context
   ([protocol host] (ApiContext. protocol host nil))
@@ -18,19 +17,17 @@
       (string/replace #"-$" "")))
 
 (defn make-uri
-   "makes a uri from a supplied protocol, site, version and resource-path"
-   [^ApiContext context
-    ^String resource-path]
-
-   (let [protocol (:protocol context)
-         host (:host context)
-         version (:version context)]
-     (str protocol "://" host "/" (if version (str version "/")) resource-path)))
+  "makes a uri from a supplied protocol, site, version and resource-path"
+  [^ApiContext context
+   ^String resource-path]
+  (let [protocol (:protocol context)
+        host (:host context)
+        version (:version context)]
+    (str protocol "://" host "/" (if version (str version "/")) resource-path)))
 
 (defn subs-uri
   "substitutes parameters for tokens in the uri"
   [uri params]
-
   (loop [matches (re-seq #"\{\:(\w+)\}" uri)
          ^String result uri]
     (if (empty? matches) result

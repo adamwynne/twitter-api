@@ -1,13 +1,13 @@
 (ns twitter.test.request
-  (:use
-   [clojure.test]
-   [twitter request callbacks core]
-   [twitter.callbacks.handlers])
-  (:require
-   [http.async.client.request :as req])
-  (:import
-   (twitter.callbacks.protocols SyncSingleCallback SyncStreamingCallback
-                                AsyncSingleCallback AsyncStreamingCallback)))
+  (:use [clojure.test]
+        [twitter request callbacks core]
+        [twitter.callbacks.handlers])
+  (:require [http.async.client.request :as req])
+  (:import [twitter.callbacks.protocols
+            SyncSingleCallback
+            SyncStreamingCallback
+            AsyncSingleCallback
+            AsyncStreamingCallback]))
 
 (deftest test-sync-single-success
   (let [p (promise)]
@@ -29,11 +29,11 @@
 
 (deftest test-sync-single-exception
   (is (thrown? java.net.ConnectException
-    (execute-request-callbacks (default-client)
-                               (req/prepare-request :get "http://www.will.throwfromthis")
-                               (SyncSingleCallback. (constantly nil)
-                                                    (constantly nil)
-                                                    exception-rethrow)))))
+               (execute-request-callbacks (default-client)
+                                          (req/prepare-request :get "http://www.will.throwfromthis")
+                                          (SyncSingleCallback. (constantly nil)
+                                                               (constantly nil)
+                                                               exception-rethrow)))))
 
 (deftest test-sync-streaming-bodypart
   (let [p (promise)]
@@ -55,11 +55,11 @@
 
 (deftest test-sync-streaming-exception
   (is (thrown? java.net.ConnectException
-    (execute-request-callbacks (default-client)
-                               (req/prepare-request :get "http://www.will.throwfromthis")
-                               (SyncSingleCallback. (constantly nil)
-                                                    (constantly nil)
-                                                    exception-rethrow)))))
+               (execute-request-callbacks (default-client)
+                                          (req/prepare-request :get "http://www.will.throwfromthis")
+                                          (SyncSingleCallback. (constantly nil)
+                                                               (constantly nil)
+                                                               exception-rethrow)))))
 
 (deftest test-async-single-success
   (let [p (promise)]
@@ -103,7 +103,7 @@
                                (req/prepare-request :get "http://www.google.com/willnotfindthis")
                                (AsyncStreamingCallback. (constantly nil)
                                                         (fn [_] (deliver p :on-failure))
-                                                        (fn [_ _] )))
+                                                        (fn [_ _])))
     (is (= @p :on-failure))))
 
 (deftest test-async-streaming-exception
