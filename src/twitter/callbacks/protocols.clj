@@ -1,8 +1,6 @@
 (ns twitter.callbacks.protocols
   (:require [twitter.callbacks.handlers :refer :all]
             [http.async.client.request :as req]))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Note that the type of call can be separated into:
 ;;
@@ -24,13 +22,9 @@
 ;; - response = the response that has the status and headers
 ;; - baos = the ByteArrayOutputStream that contains a chunk of the stream
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defprotocol EmitCallbackList (emit-callback-list [this]))
 (defprotocol AsyncSyncStatus (get-async-sync [this]))
 (defprotocol SingleStreamingStatus (get-single-streaming [this]))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defrecord SyncSingleCallback
     [on-success
@@ -45,8 +39,6 @@
     [_]
     req/*default-callbacks*))
     
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defrecord SyncStreamingCallback
     [on-bodypart
      on-failure
@@ -60,8 +52,6 @@
     [this]
     (merge req/*default-callbacks*
            {:part (fn [response baos] ((:on-bodypart this) response baos) [baos :continue])})))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defrecord AsyncSingleCallback
     [on-success
@@ -78,8 +68,6 @@
            {:completed (fn [response] (handle-response response this))
             :error (fn [response throwable] ((:on-exception this) response throwable) throwable)})))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defrecord AsyncStreamingCallback
     [on-bodypart
      on-failure
@@ -95,5 +83,3 @@
            {:completed (fn [response] (handle-response response this :events #{:on-failure}))
             :part (fn [response baos] ((:on-bodypart this) response baos) [baos :continue])
             :error (fn [response throwable] ((:on-exception this) response throwable) throwable)})))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

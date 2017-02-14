@@ -5,8 +5,6 @@
    [twitter.test.creds]
    [twitter.api.restful]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmacro is-async-200
   "checks to see if the response is HTTP return code 200, and then cancels it"
   [fn-name & args]
@@ -54,8 +52,6 @@
     (assert-throw (get-in result [:body :status :id])
                   "could not retrieve the user's profile in 'show-user'")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn poll-until-no-error
   "repeatedly tries the poll instruction, for a maximum time, or until the error disappears"
   [poll-fn & {:keys [max-timeout-ms wait-time-ms]
@@ -67,8 +63,6 @@
         (Thread/sleep wait-time-ms)
         (recur (+ curr-time-ms wait-time-ms))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmacro with-setup-poll-teardown
   [id-name setup poll teardown & body]
 
@@ -76,5 +70,3 @@
      (try (poll-until-no-error (fn [] ~poll))
           ~@body
           (finally ~teardown))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

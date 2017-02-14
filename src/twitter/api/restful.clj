@@ -3,21 +3,15 @@
             [twitter.callbacks :refer :all]
             [twitter.core :refer :all]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (def ^:dynamic *rest-api* (make-api-context "https" "api.twitter.com" "1.1"))
 (def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
 (def ^:dynamic *rest-upload-api* (make-api-context "https" "upload.twitter.com" 1))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro def-twitter-restful-method
   [verb resource-path & rest]
   (let [json-path (str resource-path ".json") ; v1.1 is .json only.
         fn-name (-> resource-path clean-resource-path symbol)]
     `(def-twitter-method ~fn-name ~verb ~json-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;; Accounts

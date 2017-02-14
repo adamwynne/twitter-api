@@ -1,14 +1,10 @@
 (ns twitter.utils)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn assert-throw
   "if the supplied arg is nil, throw with the exception text provided"
   [val msg]
 
   (or val (throw (Exception. msg))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn transform-map
   "transforms the k/v pairs of a map using a supplied transformation function"
@@ -16,8 +12,6 @@
 
   (if map-to-transform
     (into {} (map (fn [[k v]] [(key-trans k) (val-trans v)]) map-to-transform))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn partition-map
   "partitions a map, depending on a predicate, returning a vector of maps of passes and fails"
@@ -32,8 +26,6 @@
             (recur (assoc passes k v) fails (rest m))
             (recur passes (assoc fails k v) (rest m)))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn get-file-ext
   "retrieves the file extension portion from the filename"
   [filename]
@@ -42,8 +34,6 @@
         result (.substring filename (inc dot-pos))]
     (if (and (>= dot-pos 0) (pos? (count result)))
       result)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn classpath-file
   "this loads a file from the classpath and returns an input stream"
@@ -54,5 +44,3 @@
                     (getResource file-name)
                     (getFile))
                 (format "Cannot find file %s" file-name)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

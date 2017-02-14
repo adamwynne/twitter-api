@@ -7,14 +7,10 @@
             [oauth.client :as oa]
             [oauth.signature :as oas]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
  (defrecord OauthCredentials
     [consumer
      #^String access-token
      #^String access-token-secret])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn sign-query
   "takes oauth credentials and returns a map of the signing parameters"
@@ -30,8 +26,6 @@
                                  uri
                                  query)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn oauth-header-string
   "Creates the string for the oauth header's 'Authorization' value,
   url encoding each value. If the signing-map is an application-only
@@ -45,8 +39,6 @@
                     "OAuth "
                     (apply hash-map (flatten (reverse signing-map))))]
       (.substring s 0 (dec (count s))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- encode-app-only-key
   "Given a consumer-key and consumer-secret, concatenates and Base64
@@ -71,8 +63,6 @@
     (if (= (:code status) 200)
       {:bearer (:access_token body)}
       (throw (Exception. (str "Failed to retrieve application-only due to an unknown error: " body))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn make-oauth-creds
   "Creates an oauth object out of supplied params. If only an app-key

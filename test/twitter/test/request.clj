@@ -9,8 +9,6 @@
    (twitter.callbacks.protocols SyncSingleCallback SyncStreamingCallback
                                 AsyncSingleCallback AsyncStreamingCallback)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (deftest test-sync-single-success
   (let [p (promise)]
     (execute-request-callbacks (default-client)
@@ -37,8 +35,6 @@
                                                     (constantly nil)
                                                     exception-rethrow)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (deftest test-sync-streaming-bodypart
   (let [p (promise)]
     (execute-request-callbacks (default-client)
@@ -64,8 +60,6 @@
                                (SyncSingleCallback. (constantly nil)
                                                     (constantly nil)
                                                     exception-rethrow)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-async-single-success
   (let [p (promise)]
@@ -94,8 +88,6 @@
                                                      (fn [_ _] (deliver p :on-exception))))
     (is (= @p :on-exception))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (deftest test-async-streaming-bodypart
   (let [p (promise)]
     (execute-request-callbacks (default-client)
@@ -122,5 +114,3 @@
                                                         (constantly nil)
                                                         (fn [_ _] (deliver p :on-exception))))
     (is (= @p :on-exception))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

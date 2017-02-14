@@ -10,8 +10,6 @@
            [com.ning.http.multipart StringPart FilePart]
            [java.io File InputStream]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn get-response-transform
   "returns a function that transforms the response into the desired outcome, depending on the request state"
   [callbacks]
@@ -25,8 +23,6 @@
           [:async :single] identity ; note that if a response if passed back to a repl, the repl seems to hang
           [:async :streaming] identity)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn execute-request-callbacks
   "submits the request and then calls back to the callbacks"
   [client req callbacks]
@@ -38,8 +34,6 @@
                         (apply concat (emit-callback-list callbacks)))]
     (transform response)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn- add-to-req
   [rb kvs f]
 
@@ -49,15 +43,11 @@
                           (string/join "," v)
                           (str v)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn- add-headers
   "adds the headers to the requestbuilder"
   [rb headers]
 
   (add-to-req rb headers #(.addHeader %1 %2 %3)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- add-cookies
   "adds the cookies to the requestbuilder"
@@ -74,15 +64,11 @@
                 secure false}} cookies]
     (.addCookie rb (Cookie. domain name value path max-age secure))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn- add-query-parameters
   "adds the query parameters to the requestbuilder"
   [rb query]
 
   (add-to-req rb query #(.addQueryParameter %1 %2 %3)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn file-body-part
   "takes a filename and returns a 'Part' object that can be added to the request"
@@ -97,15 +83,11 @@
           "GIF" (FilePart. item-name file "image/gif" "UTF-8")
           (throw (Exception. (format "unknown file extension: %s" ext))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn status-body-part
   "takes a filename and returns a 'Part' object that can be added to the request"
   [status]
 
   (StringPart. "status" status))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- add-body
   "adds the body (or sequence of bodies) onto the request builder, dealing with the special cases"
@@ -128,8 +110,6 @@
    
    (instance? File body) (.setBody rb body)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn- set-timeout
   "sets the timeout for the request"
   [rb timeout]
@@ -137,8 +117,6 @@
   (let [prc (PerRequestConfig.)]
     (.setRequestTimeoutInMs prc timeout)
     (.setPerRequestConfig rb prc)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn prepare-request-with-multi
   "the same as a normal prepare-request, but deals with multi-part form-data as a content-type"
@@ -159,5 +137,3 @@
     (when proxy (requ/set-proxy proxy rb))
     (when timeout (set-timeout rb timeout))
     (.. rb (setUrl url) (build))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

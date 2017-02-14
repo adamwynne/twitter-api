@@ -2,8 +2,6 @@
   (:require
    [clojure.data.json :as json]
    [http.async.client :as ac]))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; The function signatures for the callbacks are:
 ;; (defn on-success [response])
@@ -20,11 +18,7 @@
 ;; - response = the response that has the status and headers
 ;; - baos = the ByteArrayOutputStream that contains a chunk of the stream
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (declare get-twitter-error-message)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn response-return-everything 
   "this takes a response and returns a map of the headers and the json-parsed body"
@@ -35,15 +29,11 @@
               :status (ac/status response)
               :body (body-trans (ac/string response)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn response-return-body
   "this takes a response and returns the json-parsed body"
   [response]
   
   (json/read-json (ac/string response)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn response-throw-error
   "throws the supplied error in an exception"
@@ -51,15 +41,11 @@
 
   (throw (Exception. (get-twitter-error-message response))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn bodypart-print
   "prints out the data received from the streaming callback"
   [response baos]
 
   (println (.toString baos)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn exception-print
   "prints the string version of the throwable object"
@@ -67,29 +53,21 @@
 
   (println throwable))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn exception-rethrow
   "prints the string version of the throwable object"
   [response throwable]
 
   (throw throwable))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn rate-limit-error?
   "returns true if the given response contains a rate limit error"
   [status]
   (= 429 (:code status)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn format-rate-limit-error
   [response]
   (let [reset-time (-> response ac/headers :x-rate-limit-reset)]
     (format "Twitter responded to request with error 88: Rate limit exceeded. Next reset at %s (UTC epoch seconds)" reset-time)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn get-twitter-error-message
   "interrogates a response for its twitter error message"
@@ -109,8 +87,6 @@
       desc (format "Twitter responded to request with error: %s" desc)
       :default "Twitter responded to request with an unknown error")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn handle-response
   "takes a response and reacts to success or error.
    'events' should be a set of keywords like #{:on-success :on-failure}"
@@ -128,5 +104,3 @@
    (and (:on-failure events)
         (>= (:code (ac/status response)) 400))
      ((:on-failure callbacks) response)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

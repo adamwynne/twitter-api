@@ -8,23 +8,17 @@
   (:import [clojure.lang Keyword PersistentArrayMap]))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn- fix-keyword
   "Takes a parameter name and replaces the - with a _"
   [param-name]
 
   (keyword (.replace (name param-name) \- \_)))
   
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn- fix-colls
   "Turns collections into their string, comma-sep equivalents"
   [val]
 
   (if (coll? val) (string/join "," val) val))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- add-form-content-type
   "adds a content type of url-encoded-form to the supplied headers"
@@ -32,18 +26,12 @@
   (merge headers
          {:content-type "application/x-www-form-urlencoded"}))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (def memo-create-client (memoize ac/create-client))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn default-client 
   "makes a default async client for the http comms"
   []
   (memo-create-client :follow-redirects false :request-timeout -1))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- get-request-args 
   "takes uri, verb and optional args and returns the final uri and http parameters for the subsequent call.
@@ -80,8 +68,6 @@
      :processed-args (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :api :callbacks)
                             my-args)}))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn http-request 
   "calls the verb on the resource specified in the uri, signing with oauth in the headers
    you can supply args for async.http.client (e.g. :query, :body, :headers etc)."
@@ -102,8 +88,6 @@
     
     (execute-request-callbacks client request callbacks)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmacro def-twitter-method
   "Declares a twitter method with the supplied name, HTTP verb and relative resource path.
    As part of the specification, it must have an :api and :callbacks member of the 'rest' list.
@@ -121,5 +105,3 @@
              uri# (make-uri api-context# ~resource-path)]
          
          (http-request verb# uri# arg-map#)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

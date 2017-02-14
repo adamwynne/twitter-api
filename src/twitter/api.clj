@@ -1,8 +1,6 @@
 (ns twitter.api
   (:require [clojure.string :as string]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defrecord ApiContext
     [^String protocol
      ^String host
@@ -11,8 +9,6 @@
 (defn make-api-context
   ([protocol host] (ApiContext. protocol host nil))
   ([protocol host version] (ApiContext. protocol host version)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn clean-resource-path
   "convert groups of symbols to single dashes and drop trailing dashes"
@@ -31,8 +27,6 @@
          version (:version context)]
      (str protocol "://" host "/" (if version (str version "/")) resource-path)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn subs-uri
   "substitutes parameters for tokens in the uri"
   [uri params]
@@ -44,5 +38,3 @@
               value (get params (keyword kw))]
           (if-not value (throw (Exception. (format "%s needs :%s param to be supplied" uri kw))))
           (recur (rest matches) (.replace result token (str value)))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
