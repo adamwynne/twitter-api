@@ -1,8 +1,7 @@
 (ns twitter.api.restful
   (:require [twitter.api :refer :all]
             [twitter.callbacks :refer :all]
-            [twitter.core :refer :all]
-            [clojure.string :as string]))
+            [twitter.core :refer :all]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -15,9 +14,7 @@
 (defmacro def-twitter-restful-method
   [verb resource-path & rest]
   (let [json-path (str resource-path ".json") ; v1.1 is .json only.
-        dashed-name (string/replace resource-path #"[^a-zA-Z]+" "-") ; convert group of symbols to a dash
-        clean-name (string/replace dashed-name #"-$" "") ; drop trailing dashes
-        fn-name (symbol clean-name)]
+        fn-name (-> resource-path clean-resource-path symbol)]
     `(def-twitter-method ~fn-name ~verb ~json-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,7 +139,7 @@
 (def-twitter-restful-method :post "favorites/create")
 
 ;; Report spam
-(def-twitter-restful-method :post "users/report_spam") 
+(def-twitter-restful-method :post "users/report_spam")
 
 ;; Saved searches
 (def-twitter-restful-method :get  "saved_searches/list")

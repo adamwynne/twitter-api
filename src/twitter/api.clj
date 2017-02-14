@@ -1,4 +1,5 @@
-(ns twitter.api)
+(ns twitter.api
+  (:require [clojure.string :as string]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -12,6 +13,13 @@
   ([protocol host version] (ApiContext. protocol host version)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn clean-resource-path
+  "convert groups of symbols to single dashes and drop trailing dashes"
+  [resource-path]
+  (-> resource-path
+      (string/replace #"[^a-zA-Z]+" "-")
+      (string/replace #"-$" "")))
 
 (defn make-uri
    "makes a uri from a supplied protocol, site, version and resource-path"
