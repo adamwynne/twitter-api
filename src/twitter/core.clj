@@ -39,27 +39,21 @@
   [^Keyword verb
    ^String uri
    ^PersistentArrayMap arg-map]
-
   (let [params (transform-map (:params arg-map) :key-trans fix-keyword :val-trans fix-colls)
         body (:body arg-map)
         query (merge (:query arg-map) params)
-
         final-uri (subs-uri uri params)
-
         oauth-map (if (contains? (:oauth-creds arg-map) :bearer)
                     (:oauth-creds arg-map) ;; no need to sign for app-only auth
                     (sign-query (:oauth-creds arg-map)
                                 verb
                                 final-uri
                                 :query query))
-
         headers (merge (:headers arg-map)
                        (if oauth-map {:Authorization (oauth-header-string oauth-map)}))
-
         my-args (cond (= verb :get) (hash-map :query query :headers headers :body body)
                       (nil? body) (hash-map :headers (add-form-content-type headers) :body query)
                       :else (hash-map :query query :headers headers :body body))]
-
     {:verb verb
      :uri final-uri
      :processed-args (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :api :callbacks)
@@ -71,12 +65,10 @@
   [^Keyword verb
    ^String uri
    ^PersistentArrayMap arg-map]
-
   (let [client (or (:client arg-map) (default-client))
         callbacks (or (:callbacks arg-map)
                       (throw (Exception. "need to specify a callback argument for http-request")))
         request-args (get-request-args verb uri arg-map)
-
         request (apply prepare-request-with-multi
                        (:verb request-args)
                        (:uri request-args)
@@ -92,10 +84,8 @@
   (let [rest-map (apply sorted-map rest)]
     `(defn ~fn-name
        [& {:as args#}]
-
        (let [arg-map# (merge ~rest-map args#)
              api-context# (assert-throw (:api arg-map#) "must include an ':api' entry in the params")
              verb# (or (:verb args#) ~default-verb)
              uri# (make-uri api-context# ~resource-path)]
-
          (http-request verb# uri# arg-map#)))))

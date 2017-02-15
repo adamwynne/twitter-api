@@ -18,4 +18,3 @@
 
 (deftest test-user-streaming
   (is-async-200 user-stream :callbacks (async-streaming-nop-callback)))
-

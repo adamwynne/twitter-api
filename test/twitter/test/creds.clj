@@ -5,7 +5,6 @@
 (defn assert-get
   "get a value from the environment, otherwise throw an exception detailing the problem"
   [key-name]
-
   (or (System/getenv key-name)
       (throw (Exception. (format "please define %s in the test environment" key-name)))))
 
@@ -18,7 +17,6 @@
 (defn make-test-creds
   "makes an Oauth structure that uses an app's credentials and a users's credentials"
   []
-
   (make-oauth-creds *app-consumer-key*
                     *app-consumer-secret*
                     *user-access-token*
@@ -27,6 +25,5 @@
 (defn make-app-only-test-creds
   "makes an Oauth structure that uses only an app's credentials"
   []
-
   (make-oauth-creds *app-consumer-key*
                     *app-consumer-secret*))
