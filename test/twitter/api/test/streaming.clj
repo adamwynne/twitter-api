@@ -1,11 +1,10 @@
 (ns twitter.api.test.streaming
-  (:use [clojure.test]
-        [twitter.test-utils.core]
-        [twitter.test creds utils]
-        [twitter.callbacks]
-        [twitter.api.streaming])
-  (:require [http.async.client :as ac])
-  (:import [twitter.callbacks.protocols AsyncStreamingCallback]))
+  (:require [clojure.test :refer :all]
+            [twitter.api.streaming :refer [statuses-filter
+                                           statuses-sample user-stream]]
+            [twitter.callbacks.protocols]
+            [twitter.test-utils.core :refer [is-async-200]])
+  (:import (twitter.callbacks.protocols AsyncStreamingCallback)))
 
 (defn async-streaming-nop-callback
   "this callback does nothing with the results"

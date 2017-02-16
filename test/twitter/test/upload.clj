@@ -1,10 +1,13 @@
 (ns twitter.test.upload
-  (:use [clojure.test]
-        [twitter.test utils creds]
-        [twitter.utils]
-        [twitter.request]
-        [twitter.api.restful])
-  (:import [com.ning.http.multipart StringPart FilePart]))
+  (:require [clojure.test :refer :all]
+            [twitter.api.restful :refer [statuses-destroy-id
+                                         statuses-update-with-media]]
+            [twitter.request :refer [file-body-part
+                                     prepare-request-with-multi
+                                     status-body-part]]
+            [twitter.test.creds :refer [make-test-creds]]
+            [twitter.utils :refer [classpath-file]])
+  (:import (com.ning.http.multipart FilePart StringPart)))
 
 (def ^:dynamic *test-image-file-name* (classpath-file "testimage.gif"))
 

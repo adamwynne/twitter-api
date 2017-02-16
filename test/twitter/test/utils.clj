@@ -1,6 +1,7 @@
 (ns twitter.test.utils
-  (:use [clojure.test]
-        [twitter.utils]))
+  (:require [clojure.test :refer :all]
+            [twitter.utils :refer [get-file-ext partition-map
+                                   transform-map]]))
 
 (deftest test-transform-map
   (is (= (transform-map {:a 0 :b 1 :c 2 :d 3} :key-trans name) {"a" 0, "b" 1, "c" 2, "d" 3}))

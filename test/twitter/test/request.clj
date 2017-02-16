@@ -1,13 +1,14 @@
 (ns twitter.test.request
-  (:use [clojure.test]
-        [twitter request callbacks core]
-        [twitter.callbacks.handlers])
-  (:require [http.async.client.request :as req])
-  (:import [twitter.callbacks.protocols
-            SyncSingleCallback
-            SyncStreamingCallback
-            AsyncSingleCallback
-            AsyncStreamingCallback]))
+  (:require [clojure.test :refer :all]
+            [http.async.client.request :as req]
+            [twitter.callbacks.handlers :refer [exception-rethrow]]
+            [twitter.callbacks.protocols]
+            [twitter.core :refer [default-client]]
+            [twitter.request :refer [execute-request-callbacks]])
+  (:import (twitter.callbacks.protocols AsyncSingleCallback
+                                        AsyncStreamingCallback
+                                        SyncSingleCallback
+                                        SyncStreamingCallback)))
 
 (deftest test-sync-single-success
   (let [p (promise)]

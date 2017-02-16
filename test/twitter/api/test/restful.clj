@@ -1,10 +1,11 @@
 (ns twitter.api.test.restful
-  (:use [clojure.test]
-        [twitter.test-utils.core]
-        [twitter.test creds utils]
-        [twitter.callbacks]
-        [twitter.api.restful])
-  (:import [java.io File]))
+  (:require [clojure.test :refer :all]
+            [twitter.api.restful :refer :all]
+            [twitter.test-utils.core :refer [get-current-status-id
+                                             get-user-id is-200
+                                             with-setup-poll-teardown]]
+            [twitter.test.creds :refer [*user-screen-name*
+                                        make-test-creds]]))
 
 (deftest test-account
   (is-200 account-verify-credentials)
@@ -61,10 +62,10 @@
   [list-id-name & body]
   `(with-setup-poll-teardown
      ~list-id-name
-     (get-in (lists-create :oauth-creds (make-test-creds) :params {:name "mytestlistblumblum"})
+     (get-in (~lists-create :oauth-creds (~make-test-creds) :params {:name "mytestlistblumblum"})
              [:body :id])
-     (lists-statuses :oauth-creds (make-test-creds) :params {:list-id ~list-id-name})
-     (lists-destroy :oauth-creds (make-test-creds) :params {:list-id ~list-id-name})
+     (~lists-statuses :oauth-creds (~make-test-creds) :params {:list-id ~list-id-name})
+     (~lists-destroy :oauth-creds (~make-test-creds) :params {:list-id ~list-id-name})
      ~@body))
 
 (deftest test-lists
@@ -112,10 +113,10 @@
   [search-id-name & body]
   `(with-setup-poll-teardown
      ~search-id-name
-     (get-in (saved-searches-create :oauth-creds (make-test-creds) :params {:query "sandwiches"})
+     (get-in (saved-searches-create :oauth-creds (~make-test-creds) :params {:query "sandwiches"})
              [:body :id])
-     (saved-searches-show-id :oauth-creds (make-test-creds) :params {:id ~search-id-name})
-     (saved-searches-destroy-id :oauth-creds (make-test-creds) :params {:id ~search-id-name})
+     (saved-searches-show-id :oauth-creds (~make-test-creds) :params {:id ~search-id-name})
+     (saved-searches-destroy-id :oauth-creds (~make-test-creds) :params {:id ~search-id-name})
      ~@body))
 
 (deftest test-saved-searches

@@ -1,12 +1,12 @@
 (ns twitter.test.callbacks
-  (:use [clojure.test]
-        [twitter.callbacks]
-        [twitter.callbacks protocols handlers])
-  (:import [twitter.callbacks.protocols
-            SyncSingleCallback
-            SyncStreamingCallback
-            AsyncSingleCallback
-            AsyncStreamingCallback]))
+  (:require [clojure.test :refer :all]
+            [twitter.callbacks :refer [get-default-callbacks]]
+            [twitter.callbacks.protocols :refer [get-async-sync
+                                                 get-single-streaming]])
+  (:import (twitter.callbacks.protocols AsyncSingleCallback
+                                        AsyncStreamingCallback
+                                        SyncSingleCallback
+                                        SyncStreamingCallback)))
 
 (deftest test-sync-single-protocol
   (let [s (SyncSingleCallback. identity identity identity)]

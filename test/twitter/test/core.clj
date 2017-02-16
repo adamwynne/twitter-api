@@ -1,8 +1,9 @@
 (ns twitter.test.core
-  (:use [clojure.test]
-        [twitter.test.creds]
-        [twitter oauth api utils core callbacks])
-  (:import [twitter.api ApiContext]))
+  (:require [clojure.test :refer :all]
+            [twitter.api :refer [make-uri subs-uri]]
+            [twitter.oauth :refer [oauth-header-string sign-query]]
+            [twitter.test.creds :refer [make-test-creds]])
+  (:import (twitter.api ApiContext)))
 
 (deftest test-sign-query
   (let [result (sign-query (make-test-creds) :get "http://www.cnn.com" :query {:test-param "true"})]
