@@ -8,6 +8,7 @@
 (def ^:dynamic *rest-upload-api* (make-api-context "https" "upload.twitter.com" 1))
 
 (defmacro def-twitter-restful-method
+  {:requires [#'def-twitter-method get-default-callbacks]}
   [verb resource-path & rest]
   (let [json-path (str resource-path ".json") ; v1.1 is .json only.
         fn-name (-> resource-path clean-resource-path symbol)]
