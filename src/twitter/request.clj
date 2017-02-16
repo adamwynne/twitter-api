@@ -8,8 +8,9 @@
                                                  get-async-sync
                                                  get-single-streaming]]
             [twitter.utils :refer [get-file-ext]])
-  (:import (com.ning.http.client Cookie PerRequestConfig RequestBuilder)
-           (com.ning.http.multipart FilePart StringPart)
+  (:import (com.ning.http.client RequestBuilder)
+           (com.ning.http.client.cookie Cookie)
+           (com.ning.http.client.multipart FilePart StringPart)
            (java.io File InputStream)))
 
 (defn get-response-transform
@@ -49,21 +50,25 @@
 (defn- add-cookies
   "adds the cookies to the requestbuilder"
   [rb cookies]
-  (doseq [{:keys [domain
-                  name
+  (doseq [{:keys [name
                   value
+                  wrap
+                  domain
                   path
                   max-age
-                  secure]
+                  secure
+                  http-only]
            :or {path "/"
+                wrap false
                 max-age 30
-                secure false}} cookies]
-    (.addCookie rb (Cookie. domain name value path max-age secure))))
+                secure false
+                http-only false}} cookies]
+    (.addCookie rb (Cookie. name value wrap domain path max-age secure http-only))))
 
 (defn- add-query-parameters
   "adds the query parameters to the requestbuilder"
   [rb query]
-  (add-to-req rb query #(.addQueryParameter %1 %2 %3)))
+  (add-to-req rb query #(.addQueryParam %1 %2 %3)))
 
 (defn file-body-part
   "takes a filename and returns a 'Part' object that can be added to the request"
@@ -72,9 +77,9 @@
         file (File. file-name)
         ext (.toUpperCase (get-file-ext file-name))]
     (case ext
-      "JPG" (FilePart. item-name file "image/jpeg" "UTF-8")
-      "PNG" (FilePart. item-name file "image/png" "UTF-8")
-      "GIF" (FilePart. item-name file "image/gif" "UTF-8")
+      "JPG" (FilePart. item-name file "image/jpeg")
+      "PNG" (FilePart. item-name file "image/png")
+      "GIF" (FilePart. item-name file "image/gif")
       (throw (Exception. (format "unknown file extension: %s" ext))))))
 
 (defn status-body-part
@@ -89,7 +94,7 @@
     (= "multipart/form-data" content-type) (doseq [bp (if (coll? body) body (list body))]
                                              (.addBodyPart rb bp))
     (map? body) (doseq [[k v] body]
-                  (.addParameter rb
+                  (.addFormParam rb
                                  (if (keyword? k) (name k) k)
                                  (str v)))
 
@@ -105,9 +110,7 @@
 (defn- set-timeout
   "sets the timeout for the request"
   [rb timeout]
-  (let [prc (PerRequestConfig.)]
-    (.setRequestTimeoutInMs prc timeout)
-    (.setPerRequestConfig rb prc)))
+  (.setRequestTimeout rb timeout))
 
 (defn prepare-request-with-multi
   "the same as a normal prepare-request, but deals with multi-part form-data as a content-type"

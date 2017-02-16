@@ -7,7 +7,7 @@
                                      status-body-part]]
             [twitter.test.creds :refer [make-test-creds]]
             [twitter.utils :refer [classpath-file]])
-  (:import (com.ning.http.multipart FilePart StringPart)))
+  (:import (com.ning.http.client.multipart FilePart StringPart)))
 
 (def ^:dynamic *test-image-file-name* (classpath-file "testimage.gif"))
 

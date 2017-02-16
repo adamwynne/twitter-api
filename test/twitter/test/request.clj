@@ -29,7 +29,7 @@
     (is (= @p :on-failure))))
 
 (deftest test-sync-single-exception
-  (is (thrown? java.net.ConnectException
+  (is (thrown? java.net.UnknownHostException
                (execute-request-callbacks (default-client)
                                           (req/prepare-request :get "http://www.will.throwfromthis")
                                           (SyncSingleCallback. (constantly nil)
@@ -55,7 +55,7 @@
     (is (= @p :on-failure))))
 
 (deftest test-sync-streaming-exception
-  (is (thrown? java.net.ConnectException
+  (is (thrown? java.net.UnknownHostException
                (execute-request-callbacks (default-client)
                                           (req/prepare-request :get "http://www.will.throwfromthis")
                                           (SyncSingleCallback. (constantly nil)
