@@ -1,5 +1,10 @@
 # twitter-api changelog
 
+## 0.8.0
+* Reformat the codebase using [`cljfmt`](https://github.com/weavejester/cljfmt), [`eastwood`](https://github.com/jonase/eastwood), and [`slamhound`](https://github.com/technomancy/slamhound)
+* Update dependencies:
+  - `http.async.client "0.5.2"` -> `"1.2.0"`
+
 ## 0.7.9
 * Add `statuses-lookup` restful method (thanks Ortuna)
 * Fix `user-stream-api` version (thanks dotemacs)

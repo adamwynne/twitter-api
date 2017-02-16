@@ -25,7 +25,7 @@ It is tested by interacting with the live Twitter API.
 
 Add the following to your `project.clj`'s `:dependencies`:
 
-    [twitter-api "0.7.9"]
+    [twitter-api "0.8.0"]
 
 
 ## Usage
