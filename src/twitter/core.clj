@@ -1,11 +1,12 @@
 (ns twitter.core
   (:require [clojure.string :as string]
             [http.async.client :as ac]
-            [twitter.api :refer :all]
-            [twitter.oauth :refer :all]
-            [twitter.request :refer :all]
-            [twitter.utils :refer :all])
-  (:import [clojure.lang Keyword PersistentArrayMap]))
+            [twitter.api :refer [make-uri subs-uri]]
+            [twitter.oauth :refer [oauth-header-string sign-query]]
+            [twitter.request :refer [execute-request-callbacks
+                                     prepare-request-with-multi]]
+            [twitter.utils :refer [assert-throw transform-map]])
+  (:import (clojure.lang Keyword PersistentArrayMap)))
 
 (defn- fix-keyword
   "Takes a parameter name and replaces the - with a _"
@@ -85,7 +86,7 @@
     `(defn ~fn-name
        [& {:as args#}]
        (let [arg-map# (merge ~rest-map args#)
-             api-context# (assert-throw (:api arg-map#) "must include an ':api' entry in the params")
+             api-context# (~assert-throw (:api arg-map#) "must include an ':api' entry in the params")
              verb# (or (:verb args#) ~default-verb)
-             uri# (make-uri api-context# ~resource-path)]
+             uri# (~make-uri api-context# ~resource-path)]
          (http-request verb# uri# arg-map#)))))

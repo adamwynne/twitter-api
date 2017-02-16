@@ -1,11 +1,14 @@
 (ns twitter.callbacks
-  (:require [twitter.callbacks.handlers :refer :all]
-            [twitter.callbacks.protocols :refer :all])
-  (:import [twitter.callbacks.protocols
-            SyncSingleCallback
-            SyncStreamingCallback
-            AsyncSingleCallback
-            AsyncStreamingCallback]))
+  (:require [twitter.callbacks.handlers :refer [bodypart-print
+                                                exception-print
+                                                exception-rethrow
+                                                response-return-everything
+                                                response-throw-error]]
+            [twitter.callbacks.protocols])
+  (:import (twitter.callbacks.protocols AsyncSingleCallback
+                                        AsyncStreamingCallback
+                                        SyncSingleCallback
+                                        SyncStreamingCallback)))
 ;;
 ;; Some special purpose callbacks (mainly for debugging)
 ;;

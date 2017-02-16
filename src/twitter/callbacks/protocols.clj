@@ -1,6 +1,6 @@
 (ns twitter.callbacks.protocols
-  (:require [twitter.callbacks.handlers :refer :all]
-            [http.async.client.request :as req]))
+  (:require [http.async.client.request :as req]
+            [twitter.callbacks.handlers :refer [handle-response]]))
 
 ;;
 ;; Note that the type of call can be separated into:

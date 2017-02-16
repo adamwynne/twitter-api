@@ -1,14 +1,16 @@
 (ns twitter.request
-  (:require [twitter.utils :refer :all]
-            [twitter.callbacks.handlers :refer :all]
-            [twitter.callbacks.protocols :refer :all]
+  (:require [clojure.string :as string]
             [http.async.client :as ac]
-            [http.async.client.util :as requ]
             [http.async.client.request :as req]
-            [clojure.string :as string])
-  (:import [com.ning.http.client Cookie PerRequestConfig RequestBuilder]
-           [com.ning.http.multipart StringPart FilePart]
-           [java.io File InputStream]))
+            [http.async.client.util :as requ]
+            [twitter.callbacks.handlers :refer [handle-response]]
+            [twitter.callbacks.protocols :refer [emit-callback-list
+                                                 get-async-sync
+                                                 get-single-streaming]]
+            [twitter.utils :refer [get-file-ext]])
+  (:import (com.ning.http.client Cookie PerRequestConfig RequestBuilder)
+           (com.ning.http.multipart FilePart StringPart)
+           (java.io File InputStream)))
 
 (defn get-response-transform
   "returns a function that transforms the response into the desired outcome, depending on the request state"

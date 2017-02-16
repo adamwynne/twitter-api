@@ -1,7 +1,7 @@
 (ns twitter.api.restful
-  (:require [twitter.api :refer :all]
-            [twitter.callbacks :refer :all]
-            [twitter.core :refer :all]))
+  (:require [twitter.api :refer [clean-resource-path make-api-context]]
+            [twitter.callbacks :refer [get-default-callbacks]]
+            [twitter.core :refer [def-twitter-method]]))
 
 (def ^:dynamic *rest-api* (make-api-context "https" "api.twitter.com" "1.1"))
 (def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
@@ -16,7 +16,6 @@
 ;; Accounts
 (def-twitter-restful-method :get  "account/settings")
 (def-twitter-restful-method :get  "account/verify_credentials")
-(def-twitter-restful-method :post "account/settings")
 (def-twitter-restful-method :post "account/update_delivery_device")
 (def-twitter-restful-method :post "account/update_profile")
 (def-twitter-restful-method :post "account/update_profile_background_image")

@@ -1,11 +1,11 @@
 (ns twitter.oauth
-  (:require [http.async.client.request :as req]
+  (:require [clojure.data.codec.base64 :as b64]
             [http.async.client :refer [create-client]]
-            [twitter.callbacks :refer [callbacks-sync-single-default]]
-            [twitter.request :refer [execute-request-callbacks]]
-            [clojure.data.codec.base64 :as b64]
+            [http.async.client.request :as req]
             [oauth.client :as oa]
-            [oauth.signature :as oas]))
+            [oauth.signature :as oas]
+            [twitter.callbacks :refer [callbacks-sync-single-default]]
+            [twitter.request :refer [execute-request-callbacks]]))
 
 (defrecord OauthCredentials [consumer
                              #^String access-token
