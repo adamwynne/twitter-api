@@ -1,5 +1,9 @@
 # twitter-api changelog
 
+## 1.8.0
+* Publish `0.8.0` as `1.8.0`
+  - [`1.0.0`](https://clojars.org/twitter-api/versions/1.0.0) was previously published on Clojars on the same day as [`0.1.0`](https://clojars.org/twitter-api/versions/0.1.0) (2011-06-30), but all development continued with major version `0`, up to and including `0.8.0`.
+
 ## 0.8.0
 * Reformat the codebase using [`cljfmt`](https://github.com/weavejester/cljfmt), [`eastwood`](https://github.com/jonase/eastwood), and [`slamhound`](https://github.com/technomancy/slamhound)
 * Update dependencies:

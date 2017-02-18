@@ -23,9 +23,10 @@ It is tested by interacting with the live Twitter API.
 
 ## Leiningen
 
+`twitter-api` is published on [Clojars](https://clojars.org/twitter-api).
 Add the following to your `project.clj`'s `:dependencies`:
 
-    [twitter-api "0.8.0"]
+    [twitter-api "1.8.0"]
 
 
 ## Usage
