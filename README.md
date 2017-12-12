@@ -87,9 +87,26 @@ All of the API calls return the full HTTP response, including headers, so in mos
                  :params {:status "hello world"})
 
 ; upload a picture tweet with a text status attached, using the default sync-single callback
+; (this method has been deprecated by twitter.)
 (statuses-update-with-media :oauth-creds my-creds
                             :body [(file-body-part "/pics/test.jpg")
                                    (status-body-part "testing")])
+
+;; upload a picture tweet.
+(let [media-id (-> (media-upload-chunked :oauth-creds my-creds
+                                         :media "/pics/test.jpg"
+                                         :media-type "image/jpeg")
+                   :body
+                   :media_id)]
+  (statuses-update :oauth-creds my-creds :params {:status "hi!" :media-ids [media-id]}))
+
+;; upload a video tweet.
+(let [media-id (-> (media-upload-chunked :oauth-creds my-creds
+                                         :media "/vids/test.mp4"
+                                         :media-type "video/mp4")
+                   :body
+                   :media_id)]
+  (statuses-update :oauth-creds my-creds :params {:status "hi!" :media-ids [media-id]}))
 ```
 
 ### Streaming calls

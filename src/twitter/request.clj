@@ -7,7 +7,8 @@
             [twitter.callbacks.protocols :refer [emit-callback-list
                                                  get-async-sync
                                                  get-single-streaming]]
-            [twitter.utils :refer [get-file-ext]])
+            [twitter.utils :refer [get-file-ext]]
+            [clojure.java.io :as io])
   (:import (com.ning.http.client RequestBuilder)
            (com.ning.http.client.cookie Cookie)
            (com.ning.http.client.multipart FilePart StringPart)
@@ -70,17 +71,24 @@
   [rb query]
   (add-to-req rb query #(.addQueryParam %1 %2 %3)))
 
+(defn guess-mime-type
+  "guesses the MIME type of a media file"
+  [file-name]
+  (condp some [(.toLowerCase (get-file-ext file-name))]
+    #{"jpg" "jpeg"} "image/jpeg"
+    #{"png"} "image/png"
+    #{"gif"} "image/gif"
+    #{"webp"} "image/webp"
+    #{"mp4"} "video/mp4"
+    #{"mov"} "video/quicktime"
+    (throw (Exception. (format "unable to guess MIME type of file: %s" file-name)))))
+
 (defn file-body-part
   "takes a filename and returns a 'Part' object that can be added to the request"
   [file-name]
   (let [item-name "media[]"
-        file (File. file-name)
-        ext (.toUpperCase (get-file-ext file-name))]
-    (case ext
-      "JPG" (FilePart. item-name file "image/jpeg")
-      "PNG" (FilePart. item-name file "image/png")
-      "GIF" (FilePart. item-name file "image/gif")
-      (throw (Exception. (format "unknown file extension: %s" ext))))))
+        file (File. file-name)]
+    (FilePart. item-name file (guess-mime-type file-name))))
 
 (defn status-body-part
   "takes a filename and returns a 'Part' object that can be added to the request"
