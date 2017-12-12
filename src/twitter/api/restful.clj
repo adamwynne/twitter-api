@@ -1,13 +1,13 @@
 (ns twitter.api.restful
   (:require [clojure.java.io :as io]
-            [twitter.api :refer [clean-resource-path make-api-context]]
+            [twitter.api :refer [clean-resource-path ->ApiContext]]
             [twitter.callbacks :refer [get-default-callbacks]]
             [twitter.core :refer [def-twitter-method]])
   (:import (com.ning.http.client.multipart ByteArrayPart StringPart)))
 
-(def ^:dynamic *rest-api* (make-api-context "https" "api.twitter.com" "1.1"))
-(def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
-(def ^:dynamic *rest-upload-api* (make-api-context "https" "upload.twitter.com" "1.1"))
+(def ^:dynamic *rest-api* (->ApiContext "https" "api.twitter.com" "1.1"))
+(def ^:dynamic *oauth-api* (->ApiContext "https" "api.twitter.com" nil))
+(def ^:dynamic *rest-upload-api* (->ApiContext "https" "upload.twitter.com" "1.1"))
 
 (defmacro def-twitter-restful-method
   {:requires [#'def-twitter-method get-default-callbacks]}
@@ -182,7 +182,7 @@
     (loop [segment-index 0
            bytes-sent 0
            bytes-read (.read media-stream buffer)]
-      (when (not (= bytes-read -1))
+      (when-not (neg? bytes-read)
         (media-upload
          :oauth-creds oauth-creds
          :body [(StringPart. "command" "APPEND")

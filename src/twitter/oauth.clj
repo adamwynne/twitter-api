@@ -7,22 +7,13 @@
             [twitter.callbacks :refer [callbacks-sync-single-default]]
             [twitter.request :refer [execute-request-callbacks]]))
 
-(defrecord OauthCredentials [consumer
-                             #^String access-token
-                             #^String access-token-secret])
+(defrecord OauthCredentials [consumer access-token access-token-secret])
 
 (defn sign-query
   "takes oauth credentials and returns a map of the signing parameters"
-  [#^OauthCredentials oauth-creds verb uri & {:keys [query]}]
-  (if oauth-creds
-    (into (sorted-map)
-          (merge {:realm "Twitter API"}
-                 (oa/credentials (:consumer oauth-creds)
-                                 (:access-token oauth-creds)
-                                 (:access-token-secret oauth-creds)
-                                 verb
-                                 uri
-                                 query)))))
+  [oauth-creds verb uri & {:keys [query]}]
+  (when-let [{:keys [consumer access-token access-token-secret]} oauth-creds]
+    (assoc (oa/credentials consumer access-token access-token-secret verb uri query) :realm "Twitter API")))
 
 (defn oauth-header-string
   "Creates the string for the oauth header's 'Authorization' value,
@@ -35,17 +26,16 @@
           s (reduce (fn [s [k v]] (format "%s%s=\"%s\"," s (name k) (val-transform (str v))))
                     "OAuth "
                     (apply hash-map (flatten (reverse signing-map))))]
-      (.substring s 0 (dec (count s))))))
+      (subs s 0 (dec (count s))))))
 
 (defn- encode-app-only-key
   "Given a consumer-key and consumer-secret, concatenates and Base64
   encodes them so that they can be submitted to Twitter in exchange
   for an application-only token."
   [consumer-key consumer-secret]
-  (let [concat-keys (str (oas/url-encode consumer-key) ":" (oas/url-encode consumer-secret))]
-    (-> (.getBytes concat-keys)
-        b64/encode
-        (String. "UTF-8"))))
+  (let [concat-keys (str (oas/url-encode consumer-key) ":" (oas/url-encode consumer-secret))
+        base64-bytes (b64/encode (.getBytes concat-keys))]
+    (String. ^bytes base64-bytes "UTF-8")))
 
 (defn request-app-only-token
   [consumer-key consumer-secret]
@@ -59,7 +49,8 @@
         {:keys [status body]} (execute-request-callbacks client req (callbacks-sync-single-default))]
     (if (= (:code status) 200)
       {:bearer (:access_token body)}
-      (throw (Exception. (str "Failed to retrieve application-only due to an unknown error: " body))))))
+      (throw (ex-info (str "Failed to retrieve application-only due to an unknown error: " body)
+                      {:body body})))))
 
 (defn make-oauth-creds
   "Creates an oauth object out of supplied params. If only an app-key

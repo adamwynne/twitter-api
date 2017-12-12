@@ -1,5 +1,6 @@
 (ns twitter.request
-  (:require [clojure.string :as string]
+  (:require [clojure.string :as str]
+            [clojure.java.io :as io]
             [http.async.client :as ac]
             [http.async.client.request :as req]
             [http.async.client.util :as requ]
@@ -7,8 +8,7 @@
             [twitter.callbacks.protocols :refer [emit-callback-list
                                                  get-async-sync
                                                  get-single-streaming]]
-            [twitter.utils :refer [get-file-ext]]
-            [clojure.java.io :as io])
+            [twitter.utils :refer [get-file-ext]])
   (:import (com.ning.http.client RequestBuilder)
            (com.ning.http.client.cookie Cookie)
            (com.ning.http.client.multipart FilePart StringPart)
@@ -40,7 +40,7 @@
   (doseq [[k v] kvs] (f rb
                         (if (keyword? k) (name k) k)
                         (if (coll? v)
-                          (string/join "," v)
+                          (str/join "," v)
                           (str v)))))
 
 (defn- add-headers
@@ -64,31 +64,30 @@
                 max-age 30
                 secure false
                 http-only false}} cookies]
-    (.addCookie rb (Cookie. name value wrap domain path max-age secure http-only))))
+    (.addCookie ^RequestBuilder rb (Cookie. name value wrap domain path max-age secure http-only))))
 
 (defn- add-query-parameters
   "adds the query parameters to the requestbuilder"
   [rb query]
   (add-to-req rb query #(.addQueryParam %1 %2 %3)))
 
-(defn guess-mime-type
+(defn- guess-mime-type
   "guesses the MIME type of a media file"
   [file-name]
-  (condp some [(.toLowerCase (get-file-ext file-name))]
-    #{"jpg" "jpeg"} "image/jpeg"
-    #{"png"} "image/png"
-    #{"gif"} "image/gif"
-    #{"webp"} "image/webp"
-    #{"mp4"} "video/mp4"
-    #{"mov"} "video/quicktime"
-    (throw (Exception. (format "unable to guess MIME type of file: %s" file-name)))))
+  (case (str/lower-case (get-file-ext file-name))
+    ("jpg" "jpeg") "image/jpeg"
+    ("png")        "image/png"
+    ("gif")        "image/gif"
+    ("webp")       "image/webp"
+    ("mp4")        "video/mp4"
+    ("mov")        "video/quicktime"
+    (throw (ex-info (format "unable to guess MIME type of file: %s" file-name)
+                    {:file-name file-name}))))
 
 (defn file-body-part
   "takes a filename and returns a 'Part' object that can be added to the request"
   [file-name]
-  (let [item-name "media[]"
-        file (File. file-name)]
-    (FilePart. item-name file (guess-mime-type file-name))))
+  (FilePart. "media[]" (io/file file-name) (guess-mime-type file-name)))
 
 (defn status-body-part
   "takes a filename and returns a 'Part' object that can be added to the request"
@@ -97,7 +96,7 @@
 
 (defn- add-body
   "adds the body (or sequence of bodies) onto the request builder, dealing with the special cases"
-  [rb body content-type]
+  [^RequestBuilder rb body content-type]
   (cond
     (= "multipart/form-data" content-type) (doseq [bp (if (coll? body) body (list body))]
                                              (.addBodyPart rb bp))
@@ -118,18 +117,18 @@
 (defn- set-timeout
   "sets the timeout for the request"
   [rb timeout]
-  (.setRequestTimeout rb timeout))
+  (.setRequestTimeout ^RequestBuilder rb timeout))
 
 (defn prepare-request-with-multi
   "the same as a normal prepare-request, but deals with multi-part form-data as a content-type"
-  [method #^String url & {:keys [headers
-                                 query
-                                 body
-                                 cookies
-                                 proxy
-                                 auth
-                                 timeout]}]
-  (let [rb (RequestBuilder. (req/convert-method method))]
+  [method url & {:keys [headers
+                        query
+                        body
+                        cookies
+                        proxy
+                        auth
+                        timeout]}]
+  (let [rb (RequestBuilder. ^String (req/convert-method method))]
     (when headers (add-headers rb headers))
     (when query (add-query-parameters rb query))
     (when body (add-body rb body (:content-type headers)))
@@ -137,4 +136,4 @@
     (when auth (requ/set-realm auth rb))
     (when proxy (requ/set-proxy proxy rb))
     (when timeout (set-timeout rb timeout))
-    (.. rb (setUrl url) (build))))
+    (.. rb (setUrl ^String url) (build))))

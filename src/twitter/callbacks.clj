@@ -66,4 +66,5 @@
     [:sync :streaming] (callbacks-sync-streaming-default)
     [:async :single] (callbacks-async-single-default)
     [:async :streaming] (callbacks-async-streaming-default)
-    (throw (Exception. (format "unknown call/blocking-type combination: %s %s" async-sync single-streaming)))))
+    (throw (ex-info (format "unknown call/blocking-type combination: %s %s" async-sync single-streaming)
+                    {:async-sync async-sync :single-streaming single-streaming}))))

@@ -18,7 +18,6 @@
 ;; - response = the response that has the status and headers
 ;; - baos = the ByteArrayOutputStream that contains a chunk of the stream
 ;;
-(declare get-twitter-error-message)
 
 (defn response-return-everything
   "this takes a response and returns a map of the headers and the json-parsed body"
@@ -35,24 +34,19 @@
   [response]
   (some-> (ac/string response) json/read-json))
 
-(defn response-throw-error
-  "throws the supplied error in an exception"
-  [response]
-  (throw (Exception. (get-twitter-error-message response))))
-
 (defn bodypart-print
   "prints out the data received from the streaming callback"
-  [response baos]
-  (println (.toString baos)))
+  [_ baos]
+  (println (.toString ^java.io.ByteArrayOutputStream baos)))
 
 (defn exception-print
   "prints the string version of the throwable object"
-  [response throwable]
+  [_ throwable]
   (println throwable))
 
 (defn exception-rethrow
   "prints the string version of the throwable object"
-  [response throwable]
+  [_ throwable]
   (throw throwable))
 
 (defn rate-limit-error?
@@ -79,6 +73,11 @@
       (and code desc) (format "Twitter responded to request with error %d: %s" code desc)
       desc (format "Twitter responded to request with error: %s" desc)
       :default "Twitter responded to request with an unknown error")))
+
+(defn response-throw-error
+  "throws the supplied error in an exception"
+  [response]
+  (throw (ex-info (get-twitter-error-message response) {:response response})))
 
 (defn handle-response
   "takes a response and reacts to success or error.

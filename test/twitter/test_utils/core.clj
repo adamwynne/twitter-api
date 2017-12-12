@@ -3,8 +3,7 @@
             [http.async.client :as ac]
             [twitter.api.restful :refer [users-show]]
             [twitter.test.creds :refer [make-app-only-test-creds
-                                        make-test-creds]]
-            [twitter.utils :refer [assert-throw]]))
+                                        make-test-creds]]))
 
 (defmacro is-async-200
   "checks to see if the response is HTTP return code 200, and then cancels it"
@@ -47,8 +46,9 @@
   "gets the id of the current status for the supplied screen name"
   [screen-name]
   (let [result (users-show :oauth-creds (make-test-creds) :params {:screen-name screen-name})]
-    (assert-throw (get-in result [:body :status :id])
-                  "could not retrieve the user's profile in 'show-user'")))
+    (or (get-in result [:body :status :id])
+        (throw (ex-info "could not retrieve the user's profile in 'show-user'"
+                        {:screen-name screen-name})))))
 
 (defn poll-until-no-error
   "repeatedly tries the poll instruction, for a maximum time, or until the error disappears"
