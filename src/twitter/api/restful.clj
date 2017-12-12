@@ -1,11 +1,13 @@
 (ns twitter.api.restful
-  (:require [twitter.api :refer [clean-resource-path make-api-context]]
+  (:require [clojure.java.io :as io]
+            [twitter.api :refer [clean-resource-path make-api-context]]
             [twitter.callbacks :refer [get-default-callbacks]]
-            [twitter.core :refer [def-twitter-method]]))
+            [twitter.core :refer [def-twitter-method]])
+  (:import (com.ning.http.client.multipart ByteArrayPart StringPart)))
 
 (def ^:dynamic *rest-api* (make-api-context "https" "api.twitter.com" "1.1"))
 (def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
-(def ^:dynamic *rest-upload-api* (make-api-context "https" "upload.twitter.com" 1))
+(def ^:dynamic *rest-upload-api* (make-api-context "https" "upload.twitter.com" "1.1"))
 
 (defmacro def-twitter-restful-method
   {:requires [#'def-twitter-method get-default-callbacks]}
@@ -49,9 +51,14 @@
 (def-twitter-restful-method :get  "statuses/oembed")
 ; Supply the status and file to the :body as a sequence using the functions 'file-body-part' and 'status-body-part'
 ; i.e. :body [(file-body-part "/pics/mypic.jpg") (status-body-part "hello world")]
-; for an example, see twitter.test.file-upload
+; for an example, see twitter.test.upload
 (def-twitter-restful-method :post "statuses/update_with_media"
                             :api *rest-api*
+                            :headers {:content-type "multipart/form-data"})
+
+;; Media
+(def-twitter-restful-method :post "media/upload"
+                            :api *rest-upload-api*
                             :headers {:content-type "multipart/form-data"})
 
 ;; Search
@@ -151,3 +158,43 @@
 (def-twitter-restful-method :get "help/languages")
 (def-twitter-restful-method :get "help/tos")
 (def-twitter-restful-method :get "help/privacy")
+
+(defn media-upload-chunked
+  "helper for uploading media using the chunked media upload API"
+  ;; See https://developer.twitter.com/en/docs/media/upload-media/api-reference/post-media-upload-init
+  [& {:keys [oauth-creds media media-type media-category additional-owners buffer-size]
+      :or {buffer-size (* 1024 1024)}}]
+  {:pre [(string? media)]}
+  (let [media-size (.length (io/file media))
+        media-stream (io/input-stream media)
+        buffer (byte-array buffer-size)
+        init-params (merge {:command "INIT"
+                            :media-type media-type
+                            :total-bytes media-size}
+                           (when media-category
+                             {:media-category media-category})
+                           (when additional-owners
+                             {:additional-owners additional-owners}))
+        init-resp (media-upload
+                   :oauth-creds oauth-creds
+                   :params init-params)
+        media-id (get-in init-resp [:body :media_id])]
+    (loop [segment-index 0
+           bytes-sent 0
+           bytes-read (.read media-stream buffer)]
+      (when (not (= bytes-read -1))
+        (media-upload
+         :oauth-creds oauth-creds
+         :body [(StringPart. "command" "APPEND")
+                (StringPart. "media_id" (str media-id))
+                (StringPart. "segment_index" (str segment-index))
+                (ByteArrayPart. "media" (if (= bytes-read buffer-size)
+                                          buffer
+                                          (java.util.Arrays/copyOfRange buffer 0 bytes-read)))])
+        (recur (inc segment-index)
+               (+ bytes-sent bytes-read)
+               (.read media-stream buffer))))
+    (media-upload
+     :oauth-creds oauth-creds
+     :params {:command "FINALIZE"
+              :media-id media-id})))
