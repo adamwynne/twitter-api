@@ -162,7 +162,7 @@
 (defn media-upload-chunked
   "helper for uploading media using the chunked media upload API"
   ;; See https://developer.twitter.com/en/docs/media/upload-media/api-reference/post-media-upload-init
-  [& {:keys [media media-type oauth-creds buffer-size media-category additional-owners]
+  [& {:keys [oauth-creds media media-type media-category additional-owners buffer-size]
       :or {buffer-size (* 1024 1024)}}]
   {:pre [(string? media)]}
   (let [media-size (.length (io/file media))
@@ -188,11 +188,9 @@
          :body [(StringPart. "command" "APPEND")
                 (StringPart. "media_id" (str media-id))
                 (StringPart. "segment_index" (str segment-index))
-                (ByteArrayPart.
-                 "media"
-                 (if (= bytes-read buffer-size)
-                                  buffer
-                                  (java.util.Arrays/copyOfRange buffer 0 bytes-read)))])
+                (ByteArrayPart. "media" (if (= bytes-read buffer-size)
+                                          buffer
+                                          (java.util.Arrays/copyOfRange buffer 0 bytes-read)))])
         (recur (inc segment-index)
                (+ bytes-sent bytes-read)
                (.read media-stream buffer))))

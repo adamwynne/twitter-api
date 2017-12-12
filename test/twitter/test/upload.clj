@@ -40,9 +40,8 @@
     (is (= (.substring result-text 0 (count status)) status))
     (statuses-destroy-id :oauth-creds (make-test-creds) :params {:id (:id (:body result))})))
 
-
-(defn test-chunked-media-upload []
-  (let [status "testing"
+(deftest test-chunked-media-upload
+  (let [status "testing chunked media upload"
         creds (make-test-creds)
         upload-result (media-upload-chunked
                        :oauth-creds creds

@@ -23,17 +23,17 @@
 (defn response-return-everything
   "this takes a response and returns a map of the headers and the json-parsed body"
   [response & {:keys [to-json?] :or {to-json? true}}]
-  (let [body-trans (if to-json? #(if % (json/read-json %) %) identity)]
-    (hash-map :headers (ac/headers response)
-              :status (ac/status response)
-              :body (body-trans (ac/string response)))))
+  (-> {:headers (ac/headers response)
+       :status (ac/status response)
+       :body (ac/string response)}
+      ; parse :body as json iff to-json? and body are truthy
+      (update :body (fn [body] (cond-> body
+                                 (and to-json? body) json/read-json)))))
 
 (defn response-return-body
   "this takes a response and returns the json-parsed body"
   [response]
-  (if-let [body-str (ac/string response)]
-    (json/read-json body-str)
-    nil))
+  (some-> (ac/string response) json/read-json))
 
 (defn response-throw-error
   "throws the supplied error in an exception"
