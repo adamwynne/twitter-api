@@ -2,7 +2,8 @@
   (:require [clojure.java.io :as io]
             [twitter.api :refer [clean-resource-path make-api-context]]
             [twitter.callbacks :refer [get-default-callbacks]]
-            [twitter.core :refer [def-twitter-method]]))
+            [twitter.core :refer [def-twitter-method]])
+  (:import (com.ning.http.client.multipart ByteArrayPart StringPart)))
 
 (def ^:dynamic *rest-api* (make-api-context "https" "api.twitter.com" "1.1"))
 (def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
@@ -184,10 +185,14 @@
       (when (not (= bytes-read -1))
         (media-upload
          :oauth-creds oauth-creds
-         :params {:command "APPEND"
-                  :media-id media-id
-                  :media-data (String. (bytes (clojure.data.codec.base64/encode buffer 0 bytes-read)))
-                  :segment-index segment-index})
+         :body [(StringPart. "command" "APPEND")
+                (StringPart. "media_id" (str media-id))
+                (StringPart. "segment_index" (str segment-index))
+                (ByteArrayPart.
+                 "media"
+                 (if (= bytes-read buffer-size)
+                                  buffer
+                                  (java.util.Arrays/copyOfRange buffer 0 bytes-read)))])
         (recur (inc segment-index)
                (+ bytes-sent bytes-read)
                (.read media-stream buffer))))
