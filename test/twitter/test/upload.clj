@@ -29,15 +29,15 @@
     (is r)
     (is (.getParts r))))
 
-(defn test-image-upload []
-  (let [status "testing"
+(deftest test-image-upload
+  (let [status "testing image upload"
         result (statuses-update-with-media
                 :oauth-creds (make-test-creds)
                 :body [(file-body-part *test-image-file-name*)
                        (status-body-part status)])
         result-text (:text (:body result))]
     (is (= (:code (:status result)) 200))
-    (is (= (.substring result-text 0 (count status)) status))
+    (is (= (subs result-text 0 (count status)) status))
     (statuses-destroy-id :oauth-creds (make-test-creds) :params {:id (:id (:body result))})))
 
 (deftest test-chunked-media-upload
