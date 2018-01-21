@@ -143,18 +143,32 @@ All of the API calls return the full HTTP response, including headers, so in mos
                  :callbacks *custom-streaming-callback*)
 ```
 
-## Notes
+## Notes on making API calls
 
-Unlike other APIs, the parameters for each call are not hard-coded into their Clojure wrappers.
-I just figured that you could look them up on the [dev.twitter.com/docs](https://dev.twitter.com/docs) and supply them in the `:params` map.
-
-###Some points about making the calls:
-
+* Unlike other APIs, the parameters for each call are not hard-coded into their Clojure wrappers.
+  I just figured that you could look them up on the [dev.twitter.com/docs](https://dev.twitter.com/docs) and supply them in the `:params` map.
 * You can authenticate or not, by including or omitting the `:oauth-creds` keyword and value.
   The value should be a `twitter.oauth.OauthCredentials` structure (usually the result of the `twitter.oauth/make-oauth-creds` function)
 * The callbacks decide how the call will be carried out - be it a single or streaming call, or an async or sync call.
   Read [`twitter.callbacks.protocols`](src/twitter/callbacks/protocols.clj) to see how it works
-* You can declare new methods that use different callbacks by either supplying them to the `def-twitter-method` macro, or inline at run time (via the `:callbacks` key/value), or both!
+* You can declare new methods that use different callbacks by either supplying them to the `def-twitter-method` macro,
+  or inline at run time (via the `:callbacks` key/value), or both!
+* Unless you supply a `:client my-client` pair, the library will use a memoized client.
+  This normally won't be a problem if you don't need to exit gracefully (i.e., without `(System/exit 0)` or Ctrl-C),
+  but otherwise [may cause your program to hang unexpectedly](https://github.com/adamwynne/twitter-api/issues/74).
+  To avoid this, you must do a bit more bookkeeping, via either one of these workarounds:
+
+  1. Create and close your own client:
+
+     ```clojure
+     (with-open [client (http.async.client/create-client)]
+       (users-show :client client :oauth-creds my-creds :params {:screen-name "AdamJWynne"}))
+     ```
+  2. When you're done making API calls, close the memoized client:
+
+     ```clojure
+     (http.async.client/close (twitter.core/default-client))
+     ```
 
 ## Building
 
