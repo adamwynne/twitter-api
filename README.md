@@ -113,12 +113,11 @@ All of the API calls return the full HTTP response, including headers, so in mos
 
 ```clojure
 (ns mynamespace
-  (:use [twitter.oauth]
-        [twitter.callbacks]
-        [twitter.callbacks.handlers]
-        [twitter.api.streaming])
-  (:require [clojure.data.json :as json]
-            [http.async.client :as ac])
+  (:require [twitter.oauth :refer :all]
+            [twitter.callbacks :refer :all]
+            [twitter.callbacks.handlers :refer :all]
+            [twitter.api.streaming :refer :all])
+  (:require [clojure.data.json :as json])
   (:import [twitter.callbacks.protocols AsyncStreamingCallback]))
 
 (def my-creds (make-oauth-creds *app-consumer-key*
@@ -134,9 +133,13 @@ All of the API calls return the full HTTP response, including headers, so in mos
 ; supply a callback that only prints the text of the status
 (def ^:dynamic
      *custom-streaming-callback*
-     (AsyncStreamingCallback. (comp println #(:text %) json/read-json #(str %2))
-                              (comp println response-return-everything)
-                              exception-print))
+     (AsyncStreamingCallback.
+	    (comp println
+		      #(:text %)
+	          #(json/read-str % :eof-error? false :key-fn clojure.core/keyword)
+			  #(str %2))
+        (comp println response-return-everything)
+        exception-print))
 
 (statuses-filter :params {:track "Borat"}
                  :oauth-creds my-creds
