@@ -125,6 +125,7 @@
 (def-twitter-restful-method :get  "friendships/show")
 (def-twitter-restful-method :get  "friendships/incoming")
 (def-twitter-restful-method :get  "friendships/outgoing")
+(def-twitter-restful-method :get  "friendships/no_retweets/ids")
 
 ;; Friends and followers
 (def-twitter-restful-method :get "friends/ids")
