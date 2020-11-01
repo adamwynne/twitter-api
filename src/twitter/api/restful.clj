@@ -147,6 +147,18 @@
 (def-twitter-restful-method :post "saved_searches/create")
 (def-twitter-restful-method :post "saved_searches/destroy/{:id}")
 
+;; Collections
+(def-twitter-restful-method :get  "collections/entries")
+(def-twitter-restful-method :get  "collections/list")
+(def-twitter-restful-method :get  "collections/show")
+(def-twitter-restful-method :post  "collections/create")
+(def-twitter-restful-method :post  "collections/destory")
+(def-twitter-restful-method :post  "collections/entries/add")
+(def-twitter-restful-method :post  "collections/entries/curate")
+(def-twitter-restful-method :post  "collections/entries/move")
+(def-twitter-restful-method :post  "collections/entries/remove")
+(def-twitter-restful-method :post  "collections/update")
+
 ;; Geo
 (def-twitter-restful-method :get  "geo/id/{:place_id}")
 (def-twitter-restful-method :get  "geo/reverse_geocode")
